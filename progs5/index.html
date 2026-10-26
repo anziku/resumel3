@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Résumés de cours · ENSEEIHT</title>
+<meta name="description" content="Mes résumés de cours d'élève ingénieur en apprentissage à l'ENSEEIHT (Informatique & Réseaux).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Page d'accueil : un carnet, une carte par cours. Même identité que les guides. */
+:root{
+  --paper:#F2F5F9; --surface:#FFFFFF; --ink:#132033; --muted:#566377; --line:#D6DEE9;
+  --accent:#2445B5; --accent-soft:#E7ECFB; --marker:rgba(255,222,64,.75);
+  --ok:#1D7449; --ok-soft:#E4F3EA; --todo:#7A5A00; --todo-soft:#FFF6CC;
+  --grid:rgba(36,69,181,.055);
+  --f-display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0D1420; --surface:#141D2C; --ink:#E3E9F2; --muted:#98A4B7; --line:#273349;
+    --accent:#93A9FF; --accent-soft:#1C2949; --marker:rgba(232,196,40,.38);
+    --ok:#6FD39C; --ok-soft:#14301F; --todo:#F2D46B; --todo-soft:#2E2710;
+    --grid:rgba(147,169,255,.05); color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16.5px/1.6 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:48px 64px}
+.eyebrow{font:600 .74rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.2rem,6vw,3.6rem);line-height:1;letter-spacing:-.025em;margin:10px 0 14px;text-wrap:balance}
+h1 em{font-style:normal;background:linear-gradient(transparent 58%,var(--marker) 58%)}
+.lede{max-width:60ch;margin:0 0 36px}
+h2{font:700 .8rem var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:36px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;text-decoration:none;color:var(--ink);min-width:0}
+a.card:hover{border-color:var(--accent)}
+a.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card .ue{font:600 .72rem var(--f-mono);color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.card h3{font-family:var(--f-display);font-weight:800;font-size:1.35rem;line-height:1.1;margin:0}
+.card p{margin:0;color:var(--muted);font-size:.93rem}
+.card .st{align-self:flex-start;font:600 .72rem var(--f-mono);border-radius:999px;padding:2px 10px;margin-top:auto}
+.st.ok{color:var(--ok);background:var(--ok-soft)}
+.st.todo{color:var(--todo);background:var(--todo-soft)}
+.card.soon{border-style:dashed;background:transparent}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">ENSEEIHT · 1re année apprentissage Informatique &amp; Réseaux</div>
+  <h1>Mes résumés de <em>cours</em></h1>
+  <p class="lede">Des guides courts et complets pour comprendre chaque matière, réussir les TD, les TP et les examens. Chaque guide contient le cours, des exemples, des annales corrigées et un quiz.</p>
+
+  <h2>Semestre 1</h2>
+  <div class="grid">
+
+    <a class="card" href="methodo-prog.html">
+      <span class="ue">Informatique</span>
+      <h3>Méthodologie de la Programmation</h3>
+      <p>Langage algorithmique et Ada, raffinages, contrats, types, modules, généricité, pointeurs, exceptions. Annales 2014–2024 corrigées.</p>
+      <span class="st ok">Disponible</span>
+    </a>
+
+    <!-- ===== MODÈLE POUR AJOUTER UN COURS =====
+         1. Envoie le résumé à la racine du dépôt (ex. archi-ordi.html)
+         2. Copie le bloc ci-dessous, enlève les marques de commentaire,
+            remplace le nom du fichier, la matière, le titre et le résumé.
+
+    <a class="card" href="NOM-DU-FICHIER.html">
+      <span class="ue">Matière</span>
+      <h3>Titre du cours</h3>
+      <p>Résumé en une ou deux phrases.</p>
+      <span class="st ok">Disponible</span>
+    </a>
+
+    ===== FIN DU MODÈLE ===== -->
+
+    <div class="card soon">
+      <span class="ue">Prochainement</span>
+      <h3>Prochain résumé</h3>
+      <p>Les autres matières arrivent au fil du semestre.</p>
+      <span class="st todo">En préparation</span>
+    </div>
+
+  </div>
+
+  <footer>Résumés personnels d'élève, rédigés à partir des supports de cours. Ils ne remplacent pas les documents officiels de l'école.</footer>
+</div>
+</body>
+</html>
