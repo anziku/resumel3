@@ -1,0 +1,1874 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Méthodo Prog N7</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Guide de cours complet de Méthodologie de la Programmation (ENSEEIHT 1A apprentissage) : langage algorithmique, Ada, raffinages, sous-programmes, types, modules, généricité, pointeurs, exceptions, TAD, annales corrigées.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : carnet d'ingénieur sur papier millimétré — sommaire collant à gauche, colonne de lecture ~70ch à droite. */
+:root{
+  --paper:#F2F5F9; --surface:#FFFFFF; --ink:#132033; --muted:#566377; --line:#D6DEE9;
+  --accent:#2445B5; --accent-soft:#E7ECFB; --accent-ink:#FFFFFF;
+  --marker:rgba(255,222,64,.75); --ok:#1D7449; --ok-soft:#E4F3EA; --warn:#B3261E; --warn-soft:#FCEBE9;
+  --exam:#7A5A00; --exam-soft:#FFF6CC;
+  --code-bg:#EBF0F7; --code-ink:#1A2738; --syn-kw:#2445B5; --syn-com:#5F7D6A; --syn-str:#1D7449; --syn-num:#A0461A; --syn-attr:#7A3FA8; --syn-algo:#A0461A;
+  --grid:rgba(36,69,181,.055);
+  --f-display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1420; --surface:#141D2C; --ink:#E3E9F2; --muted:#98A4B7; --line:#273349;
+    --accent:#93A9FF; --accent-soft:#1C2949; --accent-ink:#0D1420;
+    --marker:rgba(232,196,40,.38); --ok:#6FD39C; --ok-soft:#14301F; --warn:#FF8A80; --warn-soft:#3A1715;
+    --exam:#F2D46B; --exam-soft:#2E2710;
+    --code-bg:#0A111C; --code-ink:#D9E1EE; --syn-kw:#93A9FF; --syn-com:#7F9A8A; --syn-str:#7FD8A4; --syn-num:#F0A27A; --syn-attr:#CFA6F5; --syn-algo:#F0A27A;
+    --grid:rgba(147,169,255,.05); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1420; --surface:#141D2C; --ink:#E3E9F2; --muted:#98A4B7; --line:#273349;
+  --accent:#93A9FF; --accent-soft:#1C2949; --accent-ink:#0D1420;
+  --marker:rgba(232,196,40,.38); --ok:#6FD39C; --ok-soft:#14301F; --warn:#FF8A80; --warn-soft:#3A1715;
+  --exam:#F2D46B; --exam-soft:#2E2710;
+  --code-bg:#0A111C; --code-ink:#D9E1EE; --syn-kw:#93A9FF; --syn-com:#7F9A8A; --syn-str:#7FD8A4; --syn-num:#F0A27A; --syn-attr:#CFA6F5; --syn-algo:#F0A27A;
+  --grid:rgba(147,169,255,.05); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font:16.5px/1.62 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.wrap{display:grid;grid-template-columns:270px minmax(0,1fr);gap:40px;max-width:1180px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 80px}
+/* ---- sommaire ---- */
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding-block:28px 24px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em;line-height:1.1}
+.brand small{display:block;font:600 .72rem/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.progress{margin:18px 0 10px;font:600 .75rem var(--f-mono);color:var(--muted);letter-spacing:.04em}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.toc ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:1px;counter-reset:c}
+.toc li a{display:flex;gap:10px;align-items:baseline;padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink);font-size:.93rem;line-height:1.3}
+.toc li a:hover{background:var(--accent-soft)}
+.toc li a.on{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.toc .n{font:600 .72rem var(--f-mono);color:var(--muted);min-width:1.6em}
+.toc .done .n{color:var(--ok)}
+.toc .done .n::before{content:"✓"}
+.toc .done .n span{display:none}
+.toc .sep{font:600 .7rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 10px 4px}
+.tools{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.82rem}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+details.mtoc{display:none}
+/* ---- contenu ---- */
+main{min-width:0;padding-top:28px}
+.hero{padding:34px 0 26px;border-bottom:2px solid var(--ink)}
+.eyebrow{font:600 .74rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,6vw,4.1rem);line-height:.98;letter-spacing:-.025em;margin:12px 0 18px;text-wrap:balance}
+h1 em{font-style:normal;background:linear-gradient(transparent 58%,var(--marker) 58%);padding:0 .08em}
+.lede{font-size:1.12rem;max-width:62ch;color:var(--ink)}
+.lede b{font-weight:700}
+.examgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:22px;margin-top:26px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;min-width:0}
+.panel h3{margin:0 0 12px;font:700 .8rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pts{display:grid;gap:9px}
+.pt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:.93rem}
+.pt .track{grid-column:1/-1;height:9px;background:var(--line);border-radius:5px;overflow:hidden}
+.pt .track i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.pt b{font:600 .82rem var(--f-mono);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.86rem;text-decoration:none;color:var(--ink);background:var(--paper)}
+.chip:hover{border-color:var(--accent)}
+.chip b{font:600 .72rem var(--f-mono);color:var(--exam);background:var(--exam-soft);border-radius:999px;padding:0 6px}
+section.chap{padding:54px 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+.chead{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.cnum{font:600 .78rem var(--f-mono);color:var(--accent);letter-spacing:.06em}
+h2{font-family:var(--f-display);font-weight:800;font-size:clamp(1.7rem,3.6vw,2.4rem);line-height:1.05;letter-spacing:-.02em;margin:4px 0 6px;text-wrap:balance}
+.why{color:var(--muted);font-size:1.02rem;max-width:64ch;margin:0 0 6px}
+h3{font-family:var(--f-display);font-weight:600;font-size:1.28rem;letter-spacing:-.01em;margin:34px 0 8px;text-wrap:balance}
+h4{font:700 .95rem var(--f-body);margin:22px 0 6px}
+p,ul,ol{max-width:70ch}
+li{margin:3px 0}
+.mark{background:linear-gradient(transparent 55%,var(--marker) 55%)}
+code,kbd{font-family:var(--f-mono);font-size:.86em;background:var(--code-bg);color:var(--code-ink);padding:1px 5px;border-radius:4px}
+label.got{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:.85rem;cursor:pointer;user-select:none;margin-top:8px}
+label.got input{accent-color:var(--ok);width:16px;height:16px;margin:0}
+label.got:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+/* encarts */
+.box{border-radius:10px;padding:14px 18px;margin:18px 0;max-width:74ch;border:1px solid var(--line);background:var(--surface)}
+.box>:first-child{margin-top:0}.box>:last-child{margin-bottom:0}
+.box .t{display:block;font:700 .74rem var(--f-mono);letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px}
+.key{border-color:var(--accent);background:var(--accent-soft)}.key .t{color:var(--accent)}
+.trap{border-color:var(--warn);background:var(--warn-soft)}.trap .t{color:var(--warn)}
+.exam{border-color:var(--exam);background:var(--exam-soft)}.exam .t{color:var(--exam)}
+.tip{border-color:var(--ok);background:var(--ok-soft)}.tip .t{color:var(--ok)}
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);font:13.5px/1.55 var(--f-mono);padding:14px 16px;border-radius:8px;overflow-x:auto;margin:12px 0;max-width:100%;tab-size:3;border:1px solid var(--line)}
+.k{color:var(--syn-kw);font-weight:600}.c{color:var(--syn-com);font-style:italic}.s{color:var(--syn-str)}.num{color:var(--syn-num)}.at{color:var(--syn-attr)}.as{color:var(--syn-attr);font-style:italic}
+.dual{margin:14px 0;max-width:100%}
+.dual .tabs{display:flex;gap:4px}
+.dual .tabs button{border:1px solid var(--line);border-bottom:none;background:var(--paper);color:var(--muted);padding:5px 14px;border-radius:8px 8px 0 0;font:600 .78rem var(--f-mono);letter-spacing:.04em}
+.dual .tabs button[aria-selected="true"]{background:var(--code-bg);color:var(--ink)}
+.dual pre.code{margin-top:0;border-top-left-radius:0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cols>*{min-width:0}
+/* tableaux */
+.tw{overflow-x:auto;margin:14px 0;max-width:100%}
+table{border-collapse:collapse;font-size:.92rem;min-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 .74rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--paper)}
+td code{white-space:nowrap}
+tr:last-child td{border-bottom:none}
+/* solutions */
+details.sol{margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface);max-width:100%}
+details.sol>summary{cursor:pointer;padding:11px 16px;font-weight:700;list-style:none;display:flex;gap:10px;align-items:center}
+details.sol>summary::-webkit-details-marker{display:none}
+details.sol>summary::before{content:"+";font:600 1rem var(--f-mono);color:var(--accent);width:1em}
+details.sol[open]>summary::before{content:"–"}
+details.sol>summary .tag{margin-left:auto;font:600 .7rem var(--f-mono);color:var(--muted);letter-spacing:.05em}
+details.sol>.in{padding:2px 18px 14px;border-top:1px solid var(--line)}
+/* raffinage arbre */
+.tree{font:13.5px/1.6 var(--f-mono);background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;overflow-x:auto;white-space:pre;margin:12px 0}
+.tree .r{color:var(--accent);font-weight:600}.tree .f{color:var(--syn-attr)}.tree .a{color:var(--syn-com);font-style:italic}
+/* étapes */
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:10px;margin:14px 0}
+.steps>li{counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;margin:0}
+.steps>li::before{content:counter(s);font:800 1.05rem var(--f-display);color:var(--accent-ink);background:var(--accent);border-radius:50%;width:30px;height:30px;display:grid;place-items:center}
+/* simulateur exceptions */
+.sim{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
+.sim .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sim .row .btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.screen{font:600 1.05rem var(--f-mono);background:var(--code-bg);border-radius:6px;padding:10px 14px;margin:12px 0 8px;min-height:2.4em;overflow-x:auto;white-space:pre}
+.trace{margin:0;padding-left:20px;font-size:.92rem}
+.trace li{margin:4px 0}
+.trace .x{color:var(--warn);font-weight:700}
+/* quiz */
+.q{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0;max-width:74ch}
+.q p{margin:0 0 10px;font-weight:700}
+.q .opts{display:grid;gap:6px}
+.q button.o{text-align:left;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:.93rem}
+.q button.o:hover{border-color:var(--accent)}
+.q button.o.good{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.q button.o.bad{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.q .ex{margin-top:10px;font-size:.92rem;color:var(--muted)}
+.score{font:700 1rem var(--f-mono)}
+footer{padding:40px 0 0;color:var(--muted);font-size:.88rem}
+/* responsive */
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  nav.toc{display:none}
+  details.mtoc{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+  details.mtoc summary{font:700 .9rem var(--f-display);cursor:pointer}
+  details.mtoc ol{max-height:60vh;overflow:auto}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+  .examgrid,.cols{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sommaire">
+  <a href="index.html" style="display:inline-block;margin-bottom:14px;font:600 .8rem var(--f-mono);text-decoration:none">← Tous mes cours</a>
+  <div class="brand">Méthodo Prog<small>ENSEEIHT · 1A apprentissage I&amp;R</small></div>
+  <div class="progress"><span id="pg-txt">0 / 0 chapitres maîtrisés</span><div class="bar"><i id="pg-bar"></i></div></div>
+  <ol id="toc"></ol>
+  <div class="tools"><button class="btn" id="theme" type="button">Thème : auto</button><button class="btn" id="openall" type="button">Ouvrir les corrigés</button></div>
+</nav>
+<main>
+<p style="margin:0 0 8px"><a href="index.html" style="font:600 .8rem var(--f-mono);text-decoration:none">← Tous mes cours</a></p>
+<details class="mtoc"><summary>Sommaire · <span id="pg-txt-m">progression</span></summary><ol id="toc-m" class="toc"></ol></details>
+
+<header class="hero" id="top">
+  <div class="eyebrow">Méthodologie de la Programmation · langage algorithmique &amp; Ada</div>
+  <h1>Spécifier. Raffiner. Coder. <em>Prouver.</em></h1>
+  <p class="lede">Ce cours n'apprend pas un langage. Il apprend <b>une méthode</b> pour passer d'un énoncé flou à un programme correct, lisible et testé. Ce guide reprend tout le poly (Ait-Ameur, Crégut, Jaffrès-Runser), les TD, les TP et <b>dix ans d'annales</b>, avec des corrigés rédigés comme on les attend en copie.</p>
+  <div class="examgrid">
+    <div class="panel">
+      <h3>L'examen type · 1h30 · algo ou Ada</h3>
+      <div class="pts">
+        <div class="pt"><span>Conception par raffinage (tableau)</span><b>7–8 pts</b><div class="track"><i style="width:40%"></i></div></div>
+        <div class="pt"><span>Questions de cours</span><b>4–5 pts</b><div class="track"><i style="width:25%"></i></div></div>
+        <div class="pt"><span>Trace d'exceptions</span><b>4 pts</b><div class="track"><i style="width:20%"></i></div></div>
+        <div class="pt"><span>Comprendre un programme récursif</span><b>4 pts</b><div class="track"><i style="width:20%"></i></div></div>
+      </div>
+      <p style="margin:12px 0 0;font-size:.88rem;color:var(--muted)">Répartition des sujets 2021, 2023 et 2024. Consigne permanente : « respecter scrupuleusement TOUTES les consignes de bonne programmation ».</p>
+    </div>
+    <div class="panel">
+      <h3>Ce qui retombe chaque année</h3>
+      <div class="chips">
+        <a class="chip" href="#an-majo">Élément majoritaire <b>×4</b></a>
+        <a class="chip" href="#an-exc">Exemple_Exception <b>×3</b></a>
+        <a class="chip" href="#an-mystere">Mystère récursif <b>×3</b></a>
+        <a class="chip" href="#an-erreurs">Trouver les erreurs <b>×3</b></a>
+        <a class="chip" href="#an-drapeau">Drapeau hollandais <b>×2</b></a>
+        <a class="chip" href="#an-vigenere">Vigenère <b>×2</b></a>
+        <a class="chip" href="#an-doublons">Doublons <b>×2</b></a>
+        <a class="chip" href="#an-adn">Mutations ADN <b>×2</b></a>
+        <a class="chip" href="#an-seq">Plus longue séquence triée <b>×1</b></a>
+        <a class="chip" href="#cours">Questions de cours <b>tous</b></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="chap" id="demarche" data-t="La démarche">
+<div class="chead"><div><div class="cnum">CH. 1 · poly A</div><h2>Le métier : poser, résoudre, prouver</h2></div></div>
+<p class="why">Avant toute ligne de code, trois questions. Le reste du cours n'est que l'outillage de ces trois questions.</p>
+
+<div class="tw"><table>
+<tr><th>Démarche générale</th><th>En informatique</th><th>Ce que tu produis</th></tr>
+<tr><td>Poser le problème</td><td><b>Spécification</b> (le QUOI)</td><td>R0, exemples, contrat : ∀E ∃S . P(E, S)</td></tr>
+<tr><td>Le résoudre</td><td><b>Conception</b> puis <b>codage</b> (le COMMENT)</td><td>Raffinages → algorithme → Ada</td></tr>
+<tr><td>Démontrer la correction</td><td><b>Vérification &amp; validation</b></td><td>Assertions, pré/post, tests</td></tr>
+</table></div>
+
+<p>Le <b>cycle en V</b> met la conception à gauche et la V&amp;V à droite ; la V&amp;V est <span class="mark">transversale</span> : on vérifie à chaque étape, pas seulement à la fin.</p>
+
+<h3>Le vocabulaire à savoir définir en une phrase</h3>
+<div class="tw"><table>
+<tr><th>Terme</th><th>Définition courte</th></tr>
+<tr><td>Algorithme</td><td>Suite <b>finie et non ambiguë</b> d'opérations élémentaires réalisant une action abstraite. <b>Correct</b> s'il se termine avec la bonne sortie pour chaque instance du problème.</td></tr>
+<tr><td>Programme</td><td>Suite finie d'instructions exécutées automatiquement par un processeur, en interaction avec un environnement (humain, autre système, capteurs).</td></tr>
+<tr><td>Processeur</td><td>Machine (abstraite ou concrète) qui manipule des entités et exécute des actions élémentaires.</td></tr>
+<tr><td>Compilateur</td><td>Traduit un programme de L1 vers un programme équivalent en L2 (Ada → code machine avec GNAT).</td></tr>
+<tr><td>Interpréteur</td><td>Lit un programme L1 et l'exécute directement (shell, Python).</td></tr>
+<tr><td>Typage statique</td><td>Types connus à l'écriture : erreurs détectées <b>à la compilation</b>.</td></tr>
+<tr><td>Typage fort</td><td>Aucune conversion implicite : <code>5 &gt; 4.0</code> est refusé.</td></tr>
+</table></div>
+
+<div class="box key"><span class="t">Pourquoi Ada et pas Python ?</span>
+Typage fort et statique, compilateur rigoureux, lisibilité, séparation spécification (<code>.ads</code>) / implantation (<code>.adb</code>), généricité, exceptions et encapsulation intégrées. Le TP1 le montre : le programme Python <code>min_max_serie.py</code> plante seulement quand on passe dans la branche fautive (<code>enlier</code>), alors que GNAT refuse de compiler la version Ada dès la première erreur.</div>
+
+<label class="got"><input type="checkbox" data-ch="demarche"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="algo" data-t="Algo ⇄ Ada">
+<div class="chead"><div><div class="cnum">CH. 2 · poly B et C</div><h2>Le langage algorithmique et sa traduction Ada</h2></div></div>
+<p class="why">Deux langues, une seule pensée. À l'examen, tu peux écrire dans l'une ou l'autre (sauf mention « en langage algorithmique »). Retiens la correspondance ligne à ligne.</p>
+
+<h3>Anatomie d'un programme</h3>
+<div class="dual">
+<pre class="code" data-l="algo">Algorithme Périmètre_Cercle
+-- Afficher le périmètre d'un cercle dont le rayon est saisi.
+
+Constantes
+   PI = 3.1415             -- constante d'Archimède
+
+Variables
+   Rayon: Réel             -- le rayon du cercle lu au clavier
+   Périmètre: Réel         -- le périmètre du cercle
+
+Début
+   -- Saisir le rayon
+   Écrire("Rayon ? ")
+   Lire(Rayon)
+   -- Calculer le périmètre
+   Périmètre &lt;- 2.0 * PI * Rayon     -- par définition
+   { Périmètre = 2.0 * PI * Rayon }
+   -- Afficher le périmètre
+   Écrire("Périmètre = ", Périmètre)
+Fin</pre>
+<pre class="code" data-l="ada">with Ada.Text_IO;        use Ada.Text_IO;
+with Ada.Float_Text_IO;  use Ada.Float_Text_IO;
+
+-- Afficher le périmètre d'un cercle dont le rayon est saisi.
+procedure Perimetre_Cercle is
+   PI : constant Float := 3.1415;  -- constante d'Archimède
+   Rayon     : Float;              -- le rayon du cercle lu au clavier
+   Perimetre : Float;              -- le périmètre du cercle
+begin
+   -- Saisir le rayon
+   Put ("Rayon ? ");
+   Get (Rayon);
+   -- Calculer le périmètre
+   Perimetre := 2.0 * PI * Rayon;  -- par définition
+   pragma Assert (Perimetre = 2.0 * PI * Rayon);
+   -- Afficher le périmètre
+   Put ("Périmètre = ");
+   Put (Perimetre, 1, 2, 0);
+   New_Line;
+end Perimetre_Cercle;</pre>
+</div>
+<p>Fichier : <code>perimetre_cercle.adb</code> (nom de la procédure en minuscules). Ordre des déclarations : <b>constantes → types → sous-programmes → variables</b>.</p>
+
+<h4>Trois sortes de commentaires</h4>
+<ul>
+<li><code>-- texte</code> : explication. Devant un bloc = son <b>objectif</b> (ce sont les actions du raffinage). En fin de ligne = justification.</li>
+<li><code>{ propriété }</code> : assertion formelle (pré, post, invariant, variant). En Ada : <code>pragma Assert (…)</code>.</li>
+<li><code>--! texte</code> : commentaire pédagogique qui paraphrase, interdit dans un vrai programme.</li>
+</ul>
+<div class="box trap"><span class="t">Perd des points</span>Un commentaire qui paraphrase le code (<code>I &lt;- I + 1 -- incrémenter I</code>). Une constante littérale non nommée (sauf -1, 0, 1) : que veut dire <code>12</code> ? un mois, une boîte d'œufs, les noces de soie ?</div>
+
+<h3>Types, opérateurs, priorités</h3>
+<div class="tw"><table>
+<tr><th>Algo</th><th>Ada</th><th>Valeurs</th><th>Opérateurs</th></tr>
+<tr><td>Entier</td><td><code>Integer</code></td><td>-15, 0, 18</td><td><code>+ - * ** Div Mod</code> → Ada : <code>/ mod rem</code></td></tr>
+<tr><td>Réel</td><td><code>Float</code></td><td>-7.3, 1.5e-3, 3.0</td><td><code>+ - * / **</code></td></tr>
+<tr><td>Booléen</td><td><code>Boolean</code></td><td>FAUX &lt; VRAI</td><td><code>Non Et Ou EtAlors OuSinon</code> → <code>not and or and then or else</code></td></tr>
+<tr><td>Caractère</td><td><code>Character</code></td><td>'A', '5', ' '</td><td>Succ, Pred, Ord, Chr → <code>Character'Succ</code>, <code>'Pos</code>, <code>'Val</code></td></tr>
+<tr><td>Chaîne</td><td><code>String</code></td><td>"Bonjour"</td><td><code>&amp;</code> (concaténation), tranches <code>S (1 .. N)</code></td></tr>
+</table></div>
+
+<div class="cols">
+<div>
+<h4>Priorités (du plus fort au plus faible)</h4>
+<ol>
+<li><code>**  abs  not</code></li>
+<li><code>+ -</code> unaires</li>
+<li><code>* / div mod rem</code></li>
+<li><code>+ -</code> binaires, <code>&amp;</code></li>
+<li><code>&lt; &gt; &lt;= &gt;= = /=</code></li>
+<li><code>and or</code></li>
+</ol>
+<p>À priorité égale, on évalue de gauche à droite : <code>a + b ** 2 * c * d ≡ (a + (((b ** 2) * c) * d))</code>.</p>
+</div>
+<div>
+<h4>Caractères : les quatre formules</h4>
+<pre class="code" data-l="algo">Chr(Ord(C)) = C
+-- C est une majuscule ssi
+(C &gt;= 'A') Et (C &lt;= 'Z')
+-- chiffre (caractère) → entier
+Ord(C) - Ord('0')
+-- entier N dans 0..9 → caractère
+Chr(Ord('0') + N)</pre>
+<p>Jamais <code>48</code> en dur : écris <code>Ord('0')</code>.</p>
+</div>
+</div>
+
+<div class="box key"><span class="t">Évaluation en court-circuit</span>
+<code>EtAlors</code> / <code>and then</code> s'arrête dès que la gauche est FAUX ; <code>OuSinon</code> / <code>or else</code> dès qu'elle est VRAI. Indispensable pour <code>(N /= 0) EtAlors (S Div N &gt;= 10)</code> et pour toute recherche dans un tableau : <code>I &lt;= T.Taille and then T.Elements (I) /= E</code>. Avec un simple <code>and</code>, on lit la case <code>Taille + 1</code>.</div>
+
+<h4>Lois de De Morgan (pour inverser une condition de boucle)</h4>
+<p><code>Non (A Et B) = (Non A) Ou (Non B)</code> · <code>Non (A Ou B) = (Non A) Et (Non B)</code>. Style : écris <code>Si Trouvé</code>, jamais <code>Si Trouvé = VRAI</code> ; écris <code>Pair &lt;- N Mod 2 = 0</code>, jamais un Si qui affecte VRAI ou FAUX.</p>
+
+<h3>Instructions simples</h3>
+<div class="tw"><table>
+<tr><th>Concept</th><th>Algo</th><th>Ada</th><th>Règle</th></tr>
+<tr><td>Affectation</td><td><code>X &lt;- E</code></td><td><code>X := E;</code></td><td>Même type des deux côtés, à gauche une variable.</td></tr>
+<tr><td>Ne rien faire</td><td><code>Rien</code></td><td><code>null;</code></td><td>Rend explicite un cas sans action.</td></tr>
+<tr><td>Écrire</td><td><code>Écrire(E)</code></td><td><code>Put (E);</code> <code>Put_Line</code> <code>New_Line</code></td><td>Entier sans espaces : <code>Put (N, 1);</code></td></tr>
+<tr><td>Lire</td><td><code>Lire(V)</code></td><td><code>Get (V);</code> puis <code>Skip_Line;</code></td><td>Seulement une variable. Saisie invalide → <code>Data_Error</code>.</td></tr>
+<tr><td>Assertion</td><td><code>{ P }</code></td><td><code>pragma Assert (P);</code></td><td>Vérifiée seulement si compilé avec <code>-gnata</code>.</td></tr>
+<tr><td>Conversion</td><td>—</td><td><code>Float (N)</code>, <code>Integer (X)</code></td><td><code>Integer (2.5)</code> arrondit à 3.</td></tr>
+</table></div>
+<div class="box trap"><span class="t">Typage fort</span><code>X := 1.2 + 3;</code> ne compile pas. Écris <code>1.2 + 3.0</code> ou <code>1.2 + Float (N)</code>. Et <code>B &lt;- 3.6</code> est refusé si B est Entier.</div>
+
+<h3>Les structures de contrôle</h3>
+<div class="dual">
+<pre class="code" data-l="algo">Si N &gt; 0 Alors
+   Signe &lt;- 1
+SinonSi N &lt; 0 Alors
+   Signe &lt;- -1
+Sinon
+   Signe &lt;- 0
+FinSi
+
+Selon Choix Dans
+   'd', 'D' =&gt; En_Route &lt;- VRAI
+   'q', 'Q' =&gt; Quitter &lt;- VRAI
+   Autres   =&gt; Écrire("Je n'ai pas compris !")
+FinSelon
+
+TantQue Reste &gt;= Diviseur Faire       -- 0 à n fois
+   Quotient &lt;- Quotient + 1
+   Reste &lt;- Reste - Diviseur
+FinTQ
+{ Reste &lt; Diviseur }
+
+Répéter                                -- 1 à n fois
+   Écrire("N (&gt; 0) ? ")
+   Lire(N)
+JusquÀ N &gt; 0
+
+Pour I De 1 À 10 Faire                -- nombre de tours connu
+   Somme &lt;- Somme + I
+FinPour</pre>
+<pre class="code" data-l="ada">if N &gt; 0 then
+   Signe := 1;
+elsif N &lt; 0 then
+   Signe := -1;
+else
+   Signe := 0;
+end if;
+
+case Choix is
+   when 'd' | 'D' =&gt; En_Route := True;
+   when 'q' | 'Q' =&gt; Quitter := True;
+   when others    =&gt; Put_Line ("Je n'ai pas compris !");
+end case;
+
+while Reste &gt;= Diviseur loop
+   Quotient := Quotient + 1;
+   Reste := Reste - Diviseur;
+end loop;
+pragma Assert (Reste &lt; Diviseur);
+
+loop                        -- Répéter
+   Put ("N (&gt; 0) ? ");
+   Get (N);
+   Skip_Line;
+   exit when N &gt; 0;         -- JusquÀ : dernière instruction de la boucle
+end loop;
+
+for I in 1 .. 10 loop       -- I n'est pas déclaré, non modifiable
+   Somme := Somme + I;
+end loop;
+-- aussi : for I in reverse 1 .. 10 / for C in Character range 'A' .. 'Z'
+-- for J in T_Jour loop / for I in T'Range loop</pre>
+</div>
+
+<h4>Quelle boucle choisir ?</h4>
+<div class="tw"><table>
+<tr><th>Situation</th><th>Choix</th></tr>
+<tr><td>Valeur discrète, plusieurs cas</td><td><b>Selon</b> (choix disjoints, couvrir toutes les valeurs ou <code>Autres</code>)</td></tr>
+<tr><td>Condition booléenne</td><td><b>Si</b></td></tr>
+<tr><td>Nombre de tours connu à l'avance</td><td><b>Pour</b>… sauf si on peut s'arrêter avant (recherche) → TantQue</td></tr>
+<tr><td>Nombre inconnu, peut-être 0 fois</td><td><b>TantQue</b></td></tr>
+<tr><td>Nombre inconnu, au moins une fois (saisie contrôlée, menu)</td><td><b>Répéter … JusquÀ</b></td></tr>
+</table></div>
+
+<h3>Prouver une boucle : variant et invariant</h3>
+<div class="cols">
+<div class="box key"><span class="t">Variant → terminaison</span>Une expression entière, <b>≥ 0</b>, qui <b>décroît strictement</b> à chaque tour. Pour la division : <code>Reste</code>. Pour une recherche : <code>Taille - I + 1</code>. Pour le PGCD par soustractions : <code>na + nb</code>. Un Pour termine toujours.</div>
+<div class="box key"><span class="t">Invariant → correction</span>Propriété vraie avant la boucle et après chaque tour. Pour la division : <code>Dividende = Diviseur * Quotient + Reste</code>. À la sortie : invariant ET non condition = post-condition.</div>
+</div>
+
+<details class="sol"><summary>TD1 · Exécuter le programme « Premier » à la main<span class="tag">TD 1 ex. 1</span></summary><div class="in">
+<pre class="code" data-l="algo">C &lt;- 2
+P &lt;- N &gt;= 2
+TantQue P EtAlors C * C &lt; N Faire
+   Si N Mod C = 0 Alors  P &lt;- FAUX
+   Sinon                C &lt;- C + 1
+   FinSi
+FinTQ</pre>
+<p>N = 2 : P = VRAI, 4 &lt; 2 faux → « Premier ». N = 13 : C = 2, 3, puis 16 &lt; 13 faux → « Premier ». N = 303 : 303 mod 3 = 0 → « Non premier ».</p>
+<p><b>N = 25</b> : C = 2, 3, 4, 5 ; à C = 5, <code>25 &lt; 25</code> est faux, on sort sans tester 5 → affiche « Premier ». <span class="mark">Bug !</span> La condition doit être <code>C * C &lt;= N</code>.</p>
+<p>Conclusion du TD : des tests réussis ne prouvent pas la correction. Il faut viser les <b>cas limites</b> (carrés parfaits, 0, 1, 2) et choisir des noms parlants : <code>N → Nombre</code>, <code>C → Diviseur</code>, <code>P → Est_Premier</code>. Il manque aussi le R0, les commentaires de rôle et la précondition N ≥ 0.</p>
+</div></details>
+
+<div class="box tip"><span class="t">Normes de bonne programmation (relues à chaque copie)</span>
+<ul>
+<li>Identificateurs significatifs (<code>Prix_TTC</code>), chaque variable avec son commentaire de rôle, une par ligne.</li>
+<li>Toute variable initialisée avant usage, au plus près de son utilisation.</li>
+<li>La bonne structure de contrôle. Code indenté, une instruction par ligne.</li>
+<li>Boucles : variables de la condition initialisées, terminaison justifiée, assertion de sortie écrite.</li>
+<li>Saisies conviviales (consigne) et fiables (on redemande si invalide).</li>
+</ul></div>
+
+<label class="got"><input type="checkbox" data-ch="algo"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="raffinages" data-t="Raffinages">
+<div class="chead"><div><div class="cnum">CH. 3 · poly D · le cœur de l'examen</div><h2>La méthode des raffinages</h2></div></div>
+<p class="why">Diviser pour régner : on décompose une action trop complexe en sous-actions plus simples, jusqu'à n'avoir que des instructions. C'est 40 % de la note, et c'est ce qui distingue ce cours de « savoir coder ».</p>
+
+<h3>Les quatre étapes, à appliquer à chaque action complexe</h3>
+<ol class="steps">
+<li><div><b>Comprendre le problème (QUOI ?)</b><br>Reformuler en une phrase : le <b>R0</b>, verbe à l'infinitif. Puis donner des <b>exemples</b> : entrées ET résultats attendus, un cas nominal, des <b>cas limites</b>, des <b>cas d'erreur</b>. Ce sont tes futurs tests.</div></li>
+<li><div><b>Trouver une solution informelle (COMMENT ?)</b><br>L'idée en français, sans structure. La faire tourner à la main sur les exemples.</div></li>
+<li><div><b>Structurer la solution</b><br>Lister les étapes, les ordonner, les regrouper, écrire les <b>flots de données</b>, choisir les structures de contrôle, puis raffiner les actions encore complexes (R1 → R2 → … → Rn). On commence par l'action <b>la moins bien comprise</b>.</div></li>
+<li><div><b>Produire l'algorithme</b><br>Mise à plat de l'arbre : les nœuds deviennent des <b>commentaires</b>, les feuilles des <b>instructions</b>, les flots de données donnent les <b>variables</b>. Puis tester avec les exemples de l'étape 1.</div></li>
+</ol>
+
+<h3>Les flots de données</h3>
+<div class="tw"><table>
+<tr><th>Mode</th><th>L'action…</th><th>Exemple</th></tr>
+<tr><td><code>in</code></td><td>utilise la donnée sans la modifier</td><td>Afficher le pgcd : <code>pgcd: in</code></td></tr>
+<tr><td><code>out</code></td><td>produit la donnée sans lire sa valeur</td><td>Demander a et b : <code>a, b: out</code></td></tr>
+<tr><td><code>in out</code></td><td>lit la donnée puis la modifie</td><td>Soustraire au plus grand le plus petit : <code>na, nb: in out</code></td></tr>
+</table></div>
+<div class="box key"><span class="t">Pourquoi les flots ? (question de cours récurrente)</span>Ils rendent visibles les échanges entre actions. On vérifie qu'une donnée est <b>produite avant d'être utilisée</b>, que les sous-actions produisent bien les <code>out</code> de l'action mère. Ils fournissent les variables de l'algorithme et, si l'action devient un sous-programme, <b>ses paramètres et leurs modes</b>.</div>
+
+<h3>Exemple complet : le PGCD (TD 2)</h3>
+<div class="tree"><span class="r">R0 :</span> Afficher le pgcd de deux entiers strictement positifs
+
+<span class="a">Exemples :     a     b   ==&gt; pgcd
+              2     4   ==&gt; 2        -- nominal (a &lt; b)
+             20    15   ==&gt; 5        -- nominal (a &gt; b)
+             20    20   ==&gt; 20       -- nominal (a = b)
+             20     1   ==&gt; 1        -- limite (b = 1)
+              0     4   ==&gt; Erreur   -- robustesse (a &lt;= 0)</span>
+
+<span class="r">R1 :</span> Comment « Afficher le pgcd de deux entiers positifs » ?
+   Demander deux entiers a et b                 <span class="f">a, b: out</span>
+   { (a &gt; 0) Et (b &gt; 0) }
+   Déterminer le pgcd de a et b                  <span class="f">a, b: in ; pgcd: out</span>
+   Afficher le pgcd                              <span class="f">pgcd: in</span>
+
+<span class="r">R2 :</span> Comment « Déterminer le pgcd de a et b » ?
+   na &lt;- a                      <span class="a">-- a et b sont in : on travaille sur des copies</span>
+   nb &lt;- b
+   TantQue na et nb différents Faire             <span class="f">na, nb: in</span>
+      Soustraire au plus grand le plus petit     <span class="f">na, nb: in out</span>
+   FinTQ
+   pgcd &lt;- na                   <span class="a">-- pgcd est out : il doit être initialisé</span>
+
+<span class="r">R2 :</span> Comment « Demander deux entiers a et b » ?
+   Répéter
+      Écrire("a et b (&gt; 0) ? ")
+      Lire(a)
+      Lire(b)
+   JusquÀ (a &gt; 0) Et (b &gt; 0)
+
+<span class="r">R3 :</span> Comment « Soustraire au plus grand le plus petit » ?
+   Si na &gt; nb Alors  na &lt;- na - nb
+   Sinon            nb &lt;- nb - na
+   FinSi</div>
+<p>Dans le TD, le R2 « Demander deux entiers » se contente de deux <code>Lire</code> : le TD le signale comme <span class="mark">incorrect</span>, car il ne garantit pas l'assertion <code>{a &gt; 0 Et b &gt; 0}</code>. La boucle Répéter ci-dessus la garantit.</p>
+
+<details class="sol"><summary>Le même raffinage mis à plat en Ada<span class="tag">étape 4</span></summary><div class="in">
+<pre class="code" data-l="ada">with Ada.Text_IO;         use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+
+-- Afficher le pgcd de deux entiers strictement positifs.
+procedure Afficher_Pgcd is
+   A, B   : Integer;  -- les deux entiers saisis
+   Na, Nb : Integer;  -- copies de travail de A et B
+   Pgcd   : Integer;  -- le pgcd de A et B
+begin
+   -- Demander deux entiers a et b
+   loop
+      Put ("a et b (> 0) ? ");
+      Get (A);
+      Get (B);
+      Skip_Line;
+      exit when A > 0 and B > 0;
+   end loop;
+
+   -- Déterminer le pgcd de a et b
+   Na := A;
+   Nb := B;
+   while Na /= Nb loop   -- variant : Na + Nb
+      -- Soustraire au plus grand le plus petit
+      if Na > Nb then
+         Na := Na - Nb;
+      else
+         Nb := Nb - Na;
+      end if;
+   end loop;
+   Pgcd := Na;
+
+   -- Afficher le pgcd
+   Put ("pgcd = ");
+   Put (Pgcd, 1);
+   New_Line;
+end Afficher_Pgcd;</pre>
+</div></details>
+
+<h3>Règles de qualité d'un raffinage</h3>
+<div class="cols">
+<ul>
+<li>Toujours commencer par <b>R0 + exemples</b>.</li>
+<li>Une action complexe = <b>verbe à l'infinitif</b> + complément précis.</li>
+<li>Préférer <i>Déterminer, Calculer</i> à <i>Comparer, Vérifier</i> (qui ne disent pas ce qu'on produit).</li>
+<li>Structures de contrôle <b>explicites</b> : pas de « si » caché dans une phrase.</li>
+</ul>
+<ul>
+<li>Un raffinage décrit <b>complètement</b> son action, et seulement elle.</li>
+<li>Pas d'action qui paraphrase une seule instruction (« Incrémenter I »).</li>
+<li>Plus de 5–6 actions ou plusieurs boucles dans un même raffinage : il manque un niveau.</li>
+<li>Un raffinage n'apparaît jamais avant l'action qu'il décompose.</li>
+</ul>
+</div>
+
+<div class="box tip"><span class="t">Le test Comment / Pourquoi</span>Le raffinage de C répond à « <b>Comment</b> C ? ». À l'envers, pour chaque sous-action A, « <b>Pourquoi</b> A ? » doit répondre C. Si ça coince : renommer A ou C, ajouter une action intermédiaire, ou A n'est pas à sa place.</div>
+
+<h3>La méthode décrite… par un raffinage (TD 2 ex. 4)</h3>
+<div class="tree"><span class="r">R0 :</span> Construire un algorithme (pour un problème posé)
+
+<span class="r">R1 :</span> Comment « Construire un algorithme » ?
+   Comprendre le problème              <span class="f">problème: in ; R0, exemples: out</span>
+   Identifier une solution informelle   <span class="f">problème, R0, exemples: in ; idée: out</span>
+   Structurer la solution informelle    <span class="f">R0, idée, exemples: in ; raffinages: out</span>
+   Produire le programme                <span class="f">raffinages: in ; programme: out</span>
+   Tester le programme                  <span class="f">programme, exemples: in</span>
+
+<span class="r">R2 :</span> Comment « Comprendre le problème » ?
+   Reformuler le problème
+   Identifier des jeux de tests
+      <span class="a">(nominaux, limites, hors limites)</span>
+
+<span class="r">R2 :</span> Comment « Structurer la solution informelle » ?
+   Construire R1                        <span class="a">(lister, ordonner, regrouper les étapes, identifier les flots)</span>
+   TantQue il y a des étapes non élémentaires Faire
+      Choisir l'étape la moins bien comprise
+      Construire le raffinage de cette étape
+   FinTQ
+   Vérifier l'ensemble de l'algorithme</div>
+
+<div class="box exam"><span class="t">À l'examen</span>« Raffiner le sous-programme X de manière itérative, depuis R0 jusqu'à Rn ». Le correcteur attend : R0 + exemples (dont cas limites : tableau vide, un seul élément), chaque niveau avec ses flots de données, les assertions après les boucles, puis l'algorithme final mis à plat avec ses variables commentées. Un algorithme juste sans raffinages ne prend qu'une partie des points.</div>
+
+<label class="got"><input type="checkbox" data-ch="raffinages"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="sp" data-t="Sous-programmes">
+<div class="chead"><div><div class="cnum">CH. 4 · poly E</div><h2>Sous-programmes et programmation par contrat</h2></div></div>
+<p class="why">Une action du raffinage qui revient, ou qui mérite un nom, devient un sous-programme. Ses flots de données deviennent ses paramètres. Son R0 devient son contrat.</p>
+
+<h3>Procédure ou fonction ?</h3>
+<div class="tw"><table>
+<tr><th></th><th>Procédure</th><th>Fonction</th></tr>
+<tr><td>Abstraction de</td><td>une <b>action</b> (instruction)</td><td>une <b>valeur</b> (expression)</td></tr>
+<tr><td>Appel</td><td>instruction : <code>Permuter (A, B);</code></td><td>dans une expression : <code>X := Min (A, B);</code></td></tr>
+<tr><td>Modes</td><td><code>in</code>, <code>out</code>, <code>in out</code></td><td>uniquement <code>in</code></td></tr>
+<tr><td>Effet de bord</td><td>oui (via out / in out)</td><td>aucun</td></tr>
+<tr><td>Nom</td><td>verbe : <code>Permuter</code>, <code>Afficher</code></td><td>le résultat : <code>Factorielle</code>, <code>Est_Pair</code></td></tr>
+</table></div>
+<div class="box trap"><span class="t">Règle d'or</span>Une fonction ne lit pas au clavier et n'affiche rien : elle <b>retourne</b> une valeur. On sépare toujours calcul et interaction. Et un sous-programme n'utilise pas de variable globale : c'est une boîte noire qui ne communique que par ses paramètres.</div>
+
+<h3>Le contrat, au-dessus de chaque sous-programme</h3>
+<div class="dual">
+<pre class="code" data-l="algo">-- Nom : Permuter
+-- Sémantique : permuter les valeurs de deux variables
+-- Paramètres :
+--    F_X : in out Réel   -- première variable
+--    F_Y : in out Réel   -- seconde variable
+-- Pré-condition : Vrai
+-- Post-condition : F_X = F_Y'Avant Et F_Y = F_X'Avant
+-- Exceptions : aucune
+-- Tests :
+--    F_X = 3, F_Y = -5  ==&gt;  F_X = -5, F_Y = 3
+PROCÉDURE Permuter (F_X : in out Réel; F_Y : in out Réel) EST
+   Mémoire : Réel     -- valeur de F_X avant modification
+DÉBUT
+   Mémoire &lt;- F_X
+   F_X &lt;- F_Y
+   F_Y &lt;- Mémoire
+FIN Permuter</pre>
+<pre class="code" data-l="ada">-- Permuter les valeurs de deux variables.
+procedure Permuter (X : in out Float; Y : in out Float) with
+   Post =&gt; X = Y'Old and Y = X'Old
+is
+   Memoire : Float;  -- valeur de X avant modification
+begin
+   Memoire := X;
+   X := Y;
+   Y := Memoire;
+end Permuter;
+
+-- Pgcd de deux entiers strictement positifs.
+function Pgcd (A, B : in Integer) return Integer with
+   Pre  =&gt; A &gt; 0 and B &gt; 0,
+   Post =&gt; Pgcd'Result &gt; 0 and A mod Pgcd'Result = 0
+                            and B mod Pgcd'Result = 0;</pre>
+</div>
+<p>Notations : <code>X'Avant</code> en algo, <code>X'Old</code> en Ada ; <code>F'Result</code> est le résultat d'une fonction dans sa post. Paramètres formels préfixés <code>F_</code> (convention du cours).</p>
+
+<h3>Qui garantit quoi ?</h3>
+<div class="tw"><table>
+<tr><th></th><th>Obligation de</th><th>Bénéfice pour</th></tr>
+<tr><td><b>Précondition</b></td><td>l'<b>appelant</b> : la vérifier avant l'appel</td><td>l'appelé : n'a pas à la tester</td></tr>
+<tr><td><b>Postcondition</b></td><td>l'<b>appelé</b> : l'établir à la fin</td><td>l'appelant : peut compter dessus</td></tr>
+</table></div>
+<p>Si la pré est vraie et que le sous-programme termine, la post est vraie. Si la pré est fausse : comportement imprévisible. Avec <code>-gnata</code>, une <b>pré violée</b> pointe une erreur chez l'<b>appelant</b> ; une <b>post violée</b>, une erreur dans le <b>sous-programme</b> (TP 2 ex. 8).</p>
+
+<h3>Paramètres : les cinq règles qui font les exercices « Trouver les erreurs »</h3>
+<ol>
+<li>Autant de paramètres effectifs que de formels, même type à chaque position.</li>
+<li>Formel <code>in</code> → l'effectif peut être n'importe quelle expression : <code>G (P, 3 + M)</code>.</li>
+<li>Formel <code>out</code> ou <code>in out</code> → l'effectif doit être une <b>variable</b> : <code>F (Y * Y)</code> est faux.</li>
+<li>Un paramètre <code>in</code> ne peut pas être modifié dans le corps.</li>
+<li>Un appel de <b>procédure</b> est une instruction, il n'a pas de valeur : <code>Y := G (Y, M)</code> et <code>G (Y, F (M))</code> sont faux si F et G sont des procédures.</li>
+</ol>
+<p>Appel nommé possible : <code>Permuter (F_Y =&gt; Ordonnee, F_X =&gt; Abscisse);</code>. Mode à choisir selon le flot réel, jamais <code>in out</code> « par sécurité ».</p>
+
+<h3>Tester un sous-programme (TP 2)</h3>
+<pre class="code" data-l="ada">procedure Tester_Pgcd is
+begin
+   pragma Assert (Pgcd (4, 6) = 2);     -- nominal
+   pragma Assert (Pgcd (20, 15) = 5);   -- A &gt; B
+   pragma Assert (Pgcd (20, 20) = 20);  -- A = B
+   pragma Assert (Pgcd (1, 7) = 1);     -- limite
+end Tester_Pgcd;
+
+procedure Tester_Permuter is
+   A, B : Float;
+begin
+   A := 3.0;  B := -5.0;
+   Permuter (A, B);                     -- une procédure ne va pas dans un Assert :
+   pragma Assert (A = -5.0 and B = 3.0); -- on l'appelle, puis on vérifie les variables
+end Tester_Permuter;</pre>
+<p>Ordre de travail du TP : spécifier → écrire le corps vide (<code>null;</code> ou <code>return</code> d'une valeur bidon) → écrire les tests → compiler (les tests échouent) → implanter → tester. Compiler avec <code>-gnatwa -gnata -g</code>.</p>
+
+<h3>La recette d'un sous-programme</h3>
+<ol class="steps">
+<li><div>Définir l'objectif (son R0).</div></li>
+<li><div>Identifier les paramètres : rôle, mode, puis nom.</div></li>
+<li><div>Choisir procédure ou fonction ; en déduire un nom significatif.</div></li>
+<li><div>Écrire pré et post, puis le contrat complet.</div></li>
+<li><div>Écrire les tests.</div></li>
+<li><div>Implanter par raffinages, la spécification servant de R0. Tester.</div></li>
+</ol>
+
+<h3>Surcharge et récursivité</h3>
+<p><b>Surcharge</b> : plusieurs sous-programmes de même nom, distingués par le nombre ou le type des paramètres (<code>Put</code> pour Integer, Float, Character…).</p>
+<div class="dual">
+<pre class="code" data-l="algo">-- Pré-condition : F_N &gt;= 0
+FONCTION Factorielle (F_N : in Entier) RETOURNE Entier EST
+DÉBUT
+   Si F_N = 0 Alors
+      RETOURNE 1                          -- cas de base
+   Sinon
+      RETOURNE F_N * Factorielle(F_N - 1) -- cas récursif
+   FinSi
+FIN Factorielle</pre>
+<pre class="code" data-l="ada">function Factorielle (N : in Integer) return Integer with
+   Pre =&gt; N &gt;= 0
+is
+begin
+   if N = 0 then
+      return 1;                       -- cas de base
+   else
+      return N * Factorielle (N - 1); -- cas récursif
+   end if;
+end Factorielle;</pre>
+</div>
+<div class="box key"><span class="t">Récursivité en trois points</span>
+1. Un ou plusieurs <b>cas de base</b> sans appel récursif. 2. Des <b>cas récursifs</b> qui se rapprochent du cas de base. 3. <b>Terminaison</b> : un paramètre entier ≥ 0 qui décroît strictement à chaque appel (ici N). Chaque appel empile un contexte : récursion trop profonde → <code>Storage_Error</code>.</div>
+
+<details class="sol"><summary>TD 3 · Spécifier sept sous-programmes<span class="tag">corrigé</span></summary><div class="in">
+<pre class="code" data-l="algo">FONCTION Puissance (F_X : in Réel; F_N : in Entier) RETOURNE Réel
+   -- Pré : F_N &gt;= 0 Ou F_X /= 0.0          Post : Résultat = F_X ** F_N
+PROCÉDURE Saisir_Entier (F_N : out Entier)   -- interaction : procédure
+FONCTION Est_Bissextile (F_Annee : in Entier) RETOURNE Booléen
+   -- Post : Résultat = (F_Annee Mod 4 = 0 Et F_Annee Mod 100 /= 0) Ou F_Annee Mod 400 = 0
+FONCTION Pgcd (F_A, F_B : in Entier) RETOURNE Entier
+   -- Pré : F_A &gt; 0 Et F_B &gt; 0
+PROCÉDURE Diviser (F_A, F_B : in Entier; F_Q, F_R : out Entier)
+   -- Pré : F_A &gt;= 0 Et F_B &gt; 0
+   -- Post : F_A = F_Q * F_B + F_R Et 0 &lt;= F_R &lt; F_B
+PROCÉDURE Saisir_Entier_Borne (F_Consigne : in Chaîne; F_Min, F_Max : in Entier; F_N : out Entier)
+   -- Pré : F_Min &lt;= F_Max        Post : F_Min &lt;= F_N &lt;= F_Max
+PROCÉDURE Ordonner (F_C1, F_C2, F_C3 : in out Caractère)
+   -- Post : F_C1 &lt;= F_C2 &lt;= F_C3 Et {F_C1, F_C2, F_C3} = {F_C1'Avant, F_C2'Avant, F_C3'Avant}</pre>
+<p>Deux sorties (quotient et reste) → procédure avec deux <code>out</code>, pas une fonction.</p>
+</div></details>
+
+<label class="got"><input type="checkbox" data-ch="sp"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="types" data-t="Types et tableaux">
+<div class="chead"><div><div class="cnum">CH. 5 · poly F · TD 4, TP 3</div><h2>Types utilisateurs et tableaux</h2></div></div>
+<p class="why">Modéliser les données avant d'écrire le traitement. Énumérés pour les ensembles finis, enregistrements pour regrouper, tableaux pour répéter. Tous les exercices d'examen portent sur un tableau.</p>
+
+<h3>Énumération</h3>
+<div class="dual">
+<pre class="code" data-l="algo">TYPE T_Direction EST ENUMERATION (NORD, EST, SUD, OUEST)
+D : T_Direction
+D &lt;- EST
+Pour J De LUNDI À DIMANCHE Faire ... FinPour</pre>
+<pre class="code" data-l="ada">type T_Direction is (NORD, EST, SUD, OUEST);
+D : T_Direction;
+D := EST;
+Put (T_Direction'Image (D));          -- "EST"
+for J in T_Jour loop ... end loop;</pre>
+</div>
+<div class="tw"><table>
+<tr><th>Attribut</th><th>Effet</th><th>Exemple (T_Direction)</th></tr>
+<tr><td><code>'First</code> / <code>'Last</code></td><td>première / dernière valeur</td><td><code>OUEST</code> = <code>T_Direction'Last</code></td></tr>
+<tr><td><code>'Succ</code> / <code>'Pred</code></td><td>suivant / précédent</td><td><code>'Succ (OUEST)</code> → <code>Constraint_Error</code></td></tr>
+<tr><td><code>'Pos</code> / <code>'Val</code></td><td>rang (à partir de 0) / valeur de rang</td><td><code>'Pos (NORD) = 0</code></td></tr>
+<tr><td><code>'Image</code> / <code>'Value</code></td><td>valeur ↔ chaîne</td><td><code>'Value ("sud") = SUD</code></td></tr>
+</table></div>
+<div class="box tip"><span class="t">Pivoter à droite (robot du TD 4)</span><code>Si D = T_Direction'Last Alors D &lt;- T_Direction'First Sinon D &lt;- T_Direction'Succ(D)</code>, ou <code>D := T_Direction'Val ((T_Direction'Pos (D) + 1) mod 4);</code>. Intérêt des énumérés (question de cours 2018) : lisibilité, et le compilateur refuse toute valeur hors de l'ensemble ; un <code>case</code> doit couvrir toutes les valeurs.</div>
+
+<h3>Enregistrement</h3>
+<div class="dual">
+<pre class="code" data-l="algo">TYPE T_Robot EST ENREGISTREMENT
+   X : Entier              -- abscisse
+   Y : Entier              -- ordonnée
+   Direction : T_Direction
+FIN ENREGISTREMENT
+R : T_Robot
+R.X &lt;- 4
+R &lt;- (X =&gt; 4, Y =&gt; 2, Direction =&gt; OUEST)</pre>
+<pre class="code" data-l="ada">type T_Robot is record
+   X : Integer;               -- abscisse
+   Y : Integer;               -- ordonnée
+   Direction : T_Direction;
+end record;
+R : T_Robot;
+R.X := 4;
+R := (X =&gt; 4, Y =&gt; 2, Direction =&gt; OUEST);  -- agrégat nommé
+R := (4, 2, OUEST);                          -- agrégat positionnel</pre>
+</div>
+<p><code>:=</code> et <code>=</code> marchent champ par champ ; il n'y a aucun ordre <code>&lt;</code> : on l'écrit soi-même dans une fonction. Les contraintes sur les champs (<code>{1 &lt;= Jour &lt;= 31}</code>) sont des <b>invariants de type</b>.</p>
+
+<h3>Tableau : capacité ≠ taille</h3>
+<div class="dual">
+<pre class="code" data-l="algo">CAPACITE : CONSTANTE Entier &lt;- 12
+TYPE T_TabPlein EST TABLEAU (1..CAPACITE) DE Entier
+TYPE T_Tab EST ENREGISTREMENT
+   Elements : T_TabPlein
+   Taille : Entier       { 0 &lt;= Taille &lt;= CAPACITE }
+FIN ENREGISTREMENT</pre>
+<pre class="code" data-l="ada">Capacite : constant Integer := 12;
+type T_TabPlein is array (1 .. Capacite) of Integer;
+type T_Tab is record
+   Elements : T_TabPlein;
+   Taille   : Integer;   -- 0 &lt;= Taille &lt;= Capacite
+end record;</pre>
+</div>
+<p>C'est <span class="mark">exactement la déclaration des sujets 2021–2024</span>. La <b>capacité</b> est le nombre de cases (constante). La <b>taille</b> est le nombre de cases utilisées. On boucle toujours jusqu'à <code>Taille</code>.</p>
+<pre class="code" data-l="ada">T (3) := 1;                               -- une case
+T := (1, 3, 5, 2);                         -- agrégat positionnel (toutes les cases)
+T := (1 .. 2 =&gt; 0, 3 =&gt; 1, others =&gt; 0);   -- agrégat nommé
+T (3 .. 4) := (8, 7);                      -- tranche
+for I in T'Range loop ... end loop;        -- T'First .. T'Last
+type T_Frequences is array (1 .. 6) of Integer;      -- indices discrets
+type T_Valuation is array (T_Valeur) of Integer;     -- indexé par un énuméré
+type T_Matrice is array (1 .. 9, 1 .. 9) of Integer; -- 2D : M (L, C)</pre>
+<p><b>Chaînes</b> : <code>S : String (1 .. 50); Get_Line (S, N);</code> puis on n'utilise que <code>S (1 .. N)</code>. Deux String ne sont égales que si elles ont la même longueur.</p>
+
+<h3>Les schémas à connaître par cœur</h3>
+<p>Presque tous les exercices de tableau se ramènent à l'un d'eux. Les écrire sans réfléchir libère la tête pour le raffinage.</p>
+
+<div class="dual">
+<pre class="code" data-l="ada" data-name="Rechercher · compter · ajouter · supprimer · filtrer">-- RECHERCHE : indice de la 1re occurrence de E, 0 si absent.
+function Indice (T : in T_Tab; E : in Integer) return Integer is
+   I : Integer := 1;
+begin
+   while I &lt;= T.Taille and then T.Elements (I) /= E loop
+      I := I + 1;
+   end loop;
+   -- { I &gt; T.Taille OuSinon T.Elements (I) = E }
+   if I &lt;= T.Taille then return I; else return 0; end if;
+end Indice;
+
+-- COMPTER les occurrences de E.
+function Nb_Occurrences (T : in T_Tab; E : in Integer) return Integer is
+   Nb : Integer := 0;
+begin
+   for I in 1 .. T.Taille loop
+      if T.Elements (I) = E then
+         Nb := Nb + 1;
+      end if;
+   end loop;
+   return Nb;
+end Nb_Occurrences;
+
+-- AJOUTER à la fin.   Pre : T.Taille &lt; Capacite
+procedure Ajouter (T : in out T_Tab; E : in Integer) is
+begin
+   T.Taille := T.Taille + 1;
+   T.Elements (T.Taille) := E;
+end Ajouter;
+
+-- SUPPRIMER la case I en gardant l'ordre (décalage à gauche).
+-- Pre : 1 &lt;= I &lt;= T.Taille
+procedure Supprimer (T : in out T_Tab; I : in Integer) is
+begin
+   for J in I .. T.Taille - 1 loop
+      T.Elements (J) := T.Elements (J + 1);
+   end loop;
+   T.Taille := T.Taille - 1;
+end Supprimer;
+
+-- FILTRER en O(n) : garder les éléments qui vérifient une condition
+-- (TP 3 ex. 3 : supprimer les &lt; 0 et les &gt; 20).
+procedure Filtrer (T : in out T_Tab) is
+   Nb : Integer := 0;   -- nombre d'éléments conservés
+begin
+   for I in 1 .. T.Taille loop
+      if T.Elements (I) &gt;= 0 and T.Elements (I) &lt;= 20 then
+         Nb := Nb + 1;
+         T.Elements (Nb) := T.Elements (I);
+      end if;
+   end loop;
+   T.Taille := Nb;
+end Filtrer;</pre>
+<pre class="code" data-l="algo" data-name="Afficher un tableau">-- Afficher [10, 2, 4, 7]  ou  []   (TD 4 ex. 2)
+PROCÉDURE Afficher (F_T : in T_Tab) EST
+DÉBUT
+   Écrire("[")
+   Si F_T.Taille &gt; 0 Alors
+      Écrire(F_T.Elements(1))
+      Pour I De 2 À F_T.Taille Faire
+         Écrire(", ")
+         Écrire(F_T.Elements(I))
+      FinPour
+   Sinon
+      Rien
+   FinSi
+   Écrire("]")
+FIN Afficher
+-- Astuce : traiter le 1er élément à part évite la virgule en trop.</pre>
+</div>
+
+<h3>Deux tris simples, O(n²)</h3>
+<div class="cols">
+<div>
+<h4>Sélection (TP 3)</h4>
+<p>Étape i : chercher le minimum de <code>T[i..N]</code> et l'échanger avec <code>T[i]</code>.</p>
+<pre class="code" data-l="algo">Pour I De 1 À N - 1 Faire
+   -- Chercher l'indice du min de T[I..N]
+   Ind_Min &lt;- I
+   Pour J De I + 1 À N Faire
+      Si T(J) &lt; T(Ind_Min) Alors
+         Ind_Min &lt;- J
+      FinSi
+   FinPour
+   Permuter(T(I), T(Ind_Min))
+   { T[1..I] trié Et T[1..I] &lt;= T[I+1..N] }
+FinPour</pre>
+</div>
+<div>
+<h4>Insertion séquentielle (TD 4)</h4>
+<p>Étape i : insérer <code>T[i+1]</code> dans <code>T[1..i]</code> déjà trié, en décalant à droite.</p>
+<pre class="code" data-l="algo">Pour I De 2 À N Faire
+   -- Insérer T(I) dans T[1..I-1] trié
+   X &lt;- T(I)
+   J &lt;- I - 1
+   TantQue J &gt;= 1 EtAlors T(J) &gt; X Faire
+      T(J + 1) &lt;- T(J)        -- décaler
+      J &lt;- J - 1
+   FinTQ
+   T(J + 1) &lt;- X
+   { T[1..I] trié }
+FinPour</pre>
+<p>Amélioration demandée : chercher la position par <b>dichotomie</b> (moins de comparaisons ; le décalage reste O(n)).</p>
+</div>
+</div>
+<div class="box key"><span class="t">Tester un tri (TP 3 ex. 4)</span>Deux propriétés = la postcondition : le tableau est <b>trié</b> (<code>T(i) &lt;= T(i+1)</code>) et il contient <b>les mêmes éléments</b> (même taille, même nombre d'occurrences de chaque valeur).</div>
+
+<label class="got"><input type="checkbox" data-ch="types"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="modules" data-t="Modules">
+<div class="chead"><div><div class="cnum">CH. 6 · poly G</div><h2>Modules : séparer la promesse de la réalisation</h2></div></div>
+<p class="why">Un module (paquetage Ada) regroupe un type et les sous-programmes qui le manipulent. Le client ne voit que l'interface ; on peut changer le corps sans le casser.</p>
+
+<div class="tw"><table>
+<tr><th>Spécification <code>dates.ads</code></th><th>Corps <code>dates.adb</code></th></tr>
+<tr><td>Ce que voit le client : constantes, types, <b>signatures + contrats</b> des sous-programmes. Partie <code>private</code> : la représentation cachée.</td><td>Le corps de <b>tous</b> les sous-programmes de l'interface, plus les éléments internes (sous-programmes utilitaires, à spécifier ici). On ne recopie pas les contrats.</td></tr>
+</table></div>
+
+<pre class="code" data-l="ada">-- dates.ads
+package Dates is
+   type T_Mois is (JANVIER, FEVRIER, MARS, AVRIL, MAI, JUIN, JUILLET,
+                   AOUT, SEPTEMBRE, OCTOBRE, NOVEMBRE, DECEMBRE);
+   type T_Date is private;                    -- représentation cachée
+
+   procedure Initialiser (Date : out T_Date; Jour : in Integer;
+                          Mois : in T_Mois; Annee : in Integer) with
+      Pre  =&gt; Annee &gt;= 0 and Jour &gt;= 1 and Jour &lt;= 31,
+      Post =&gt; Le_Jour (Date) = Jour and Le_Mois (Date) = Mois;
+   function Le_Jour (Date : in T_Date) return Integer;
+   function Le_Mois (Date : in T_Date) return T_Mois;
+   procedure Afficher (Date : in T_Date);     -- jj/mm/aaaa
+private
+   type T_Date is record
+      Jour : Integer;  Mois : T_Mois;  Annee : Integer;
+   end record;
+end Dates;
+
+-- client.adb
+with Dates; use Dates;
+procedure Client is
+   D : T_Date;
+begin
+   Initialiser (D, 2, OCTOBRE, 2020);
+   Afficher (D);
+   -- D.Jour := 50;   refusé : T_Date est private
+end Client;</pre>
+
+<div class="cols">
+<div class="box key"><span class="t">Avantages d'un module (C2, 2018)</span>
+<ul style="margin:0;padding-left:18px">
+<li><b>Encapsulation</b> : données + opérations ensemble.</li>
+<li><b>Masquage</b> : le client ne peut pas casser l'invariant (<code>Jour := 50</code>).</li>
+<li><b>Évolutivité</b> : changer la représentation sans toucher aux clients.</li>
+<li><b>Réutilisation</b>, compilation séparée, travail en équipe.</li>
+</ul></div>
+<div class="box key"><span class="t">with / use / private</span>
+<code>with Dates;</code> donne accès : <code>Dates.Afficher</code>. <code>use Dates;</code> permet d'omettre le préfixe. <code>private</code> : le client n'a que <code>:=</code>, <code>=</code>, <code>/=</code> et les sous-programmes du module. <code>limited private</code> retire aussi <code>:=</code> et <code>=</code>.</div>
+</div>
+<p>Trois sortes de modules : <b>type</b> (Dates, Complexes : un type + ses opérations), <b>objet</b> (une donnée cachée dans le corps, comme le terminal pour Ada.Text_IO), <b>utilitaire</b> (fonctions sur des types définis ailleurs, ex. Math).</p>
+<label class="got"><input type="checkbox" data-ch="modules"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="generique" data-t="Généricité">
+<div class="chead"><div><div class="cnum">CH. 7 · poly H</div><h2>Généricité : écrire une fois, instancier partout</h2></div></div>
+<p class="why">Un tri d'entiers et un tri de caractères ont le même algorithme. La généricité paramètre un sous-programme ou un module par un <b>type</b>, une constante ou un sous-programme.</p>
+<div class="dual">
+<pre class="code" data-l="ada" data-name="Spécifier · implanter">-- permuter_generique.ads
+generic
+   type Un_Type is private;          -- paramètre de généricité
+procedure Permuter_Generique (X, Y : in out Un_Type);
+
+-- permuter_generique.adb
+procedure Permuter_Generique (X, Y : in out Un_Type) is
+   Memoire : Un_Type;
+begin
+   Memoire := X;  X := Y;  Y := Memoire;
+end Permuter_Generique;</pre>
+<pre class="code" data-l="ada" data-name="Instancier · utiliser">with Permuter_Generique;               -- with, pas de use
+procedure Exemple is
+   procedure Permuter is new Permuter_Generique (Un_Type =&gt; Integer);
+   procedure Permuter is new Permuter_Generique (Character); -- surcharge
+   A, B : Integer := 0;
+begin
+   A := 1; B := 2;
+   Permuter (A, B);
+end Exemple;</pre>
+<pre class="code" data-l="ada" data-name="Module générique">generic
+   type Type_Element is private;   -- type des éléments
+   Capacite : Integer;             -- constante
+   with function "&lt;" (G, D : in Type_Element) return Boolean;  -- sous-programme
+package Vecteurs is
+   type T_Vecteur is limited private;
+   procedure Initialiser (V : out T_Vecteur);
+   procedure Ajouter (V : in out T_Vecteur; E : in Type_Element);
+   procedure Trier (V : in out T_Vecteur);
+private
+   type T_Elements is array (1 .. Capacite) of Type_Element;
+   type T_Vecteur is record
+      Elements : T_Elements;
+      Taille   : Integer;
+   end record;
+end Vecteurs;
+
+-- instanciation
+package Vecteurs_Entiers is new Vecteurs (Integer, 100, "&lt;");
+use Vecteurs_Entiers;</pre>
+</div>
+<div class="box exam"><span class="t">Question de cours (2019, 2020, 2021, 2023, 2024)</span>« Qu'est-ce qu'un module générique ? Quel est son intérêt ? » → Un module paramétré par des types, constantes ou sous-programmes, qu'on <b>instancie</b> (<code>is new</code>) pour obtenir un module concret. Intérêt : <b>réutilisation</b> sans dupliquer le code (un seul algorithme pour tous les types), moins d'erreurs, maintenance en un seul endroit, tout en gardant le typage fort. Exemple : une Pile générique instanciée en pile d'entiers et en pile de caractères. Dans les annales « doublons » (2020) : pour généraliser à des réels ou des complexes, on rend le sous-programme générique sur le type d'élément (avec <code>"="</code>).</div>
+<label class="got"><input type="checkbox" data-ch="generique"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="pointeurs" data-t="Pointeurs">
+<div class="chead"><div><div class="cnum">CH. 8 · poly I</div><h2>Pointeurs et structures chaînées</h2></div></div>
+<p class="why">Un tableau a une capacité fixe. Une liste chaînée grandit à la demande : chaque cellule contient une valeur et l'adresse de la suivante.</p>
+<div class="tw"><table>
+<tr><th>Opération</th><th>Algo</th><th>Ada</th></tr>
+<tr><td>Type</td><td><code>TYPE P EST POINTEUR SUR T</code></td><td><code>type P is access T;</code></td></tr>
+<tr><td>Ne pointe sur rien</td><td><code>P &lt;- Null</code></td><td><code>P := null;</code> (valeur par défaut)</td></tr>
+<tr><td>Allouer</td><td><code>P &lt;- NEW T</code></td><td><code>P := new T;</code> ou <code>new T'(valeur)</code></td></tr>
+<tr><td>Zone pointée</td><td><code>P^</code></td><td><code>P.all</code></td></tr>
+<tr><td>Champ</td><td><code>P^.Champ</code></td><td><code>P.Champ</code></td></tr>
+<tr><td>Copier le pointeur</td><td><code>Q &lt;- P</code></td><td><code>Q := P;</code> → Q et P désignent <b>la même</b> zone</td></tr>
+</table></div>
+<div class="dual">
+<pre class="code" data-l="ada" data-name="Liste chaînée">type T_Cellule;                      -- annonce
+type T_Liste is access T_Cellule;
+type T_Cellule is record
+   Element : Integer;
+   Suivant : T_Liste;
+end record;
+
+-- Ajouter en tête : O(1)
+procedure Ajouter_Tete (L : in out T_Liste; E : in Integer) is
+begin
+   L := new T_Cellule'(Element =&gt; E, Suivant =&gt; L);
+end Ajouter_Tete;
+
+-- Parcours
+procedure Afficher (L : in T_Liste) is
+   Cur : T_Liste := L;
+begin
+   while Cur /= null loop
+      Put (Cur.Element, 1);  Put (' ');
+      Cur := Cur.Suivant;
+   end loop;
+end Afficher;
+
+-- Recherche (and then : sinon Cur.Element avec Cur = null)
+function Rechercher (L : T_Liste; E : Integer) return T_Liste is
+   Cur : T_Liste := L;
+begin
+   while Cur /= null and then Cur.Element /= E loop
+      Cur := Cur.Suivant;
+   end loop;
+   return Cur;   -- null si absent
+end Rechercher;
+
+-- Récursif
+function Taille (L : T_Liste) return Integer is
+begin
+   if L = null then return 0;
+   else return 1 + Taille (L.Suivant);
+   end if;
+end Taille;</pre>
+<pre class="code" data-l="ada" data-name="Supprimer une valeur">-- Supprimer la 1re cellule contenant E (si elle existe).
+procedure Supprimer (L : in out T_Liste; E : in Integer) is
+   Prec, Cur : T_Liste;
+begin
+   if L /= null and then L.Element = E then
+      L := L.Suivant;                  -- cas particulier : la tête
+   elsif L /= null then
+      Prec := L;
+      Cur := L.Suivant;
+      while Cur /= null and then Cur.Element /= E loop
+         Prec := Cur;
+         Cur := Cur.Suivant;
+      end loop;
+      if Cur /= null then
+         Prec.Suivant := Cur.Suivant;  -- court-circuiter Cur
+      end if;
+   end if;
+end Supprimer;
+-- Libération : Ada.Unchecked_Deallocation (le cours suppose
+-- un ramasse-miettes, GNAT n'en a pas).</pre>
+</div>
+<div class="box trap"><span class="t">Les trois cas à tester sur une liste</span>Liste <b>vide</b> (null), élément en <b>tête</b>, élément <b>ailleurs</b> ou absent. Déréférencer <code>null</code> lève <code>Constraint_Error</code>. Les formes de chaînage : simple (pile, liste), double (Suivant + Précédent), circulaire (le dernier pointe sur le premier : annale « Josèphe » 2014), arbre binaire (Gauche + Droit).</div>
+<label class="got"><input type="checkbox" data-ch="pointeurs"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="exceptions" data-t="Exceptions">
+<div class="chead"><div><div class="cnum">CH. 9 · poly J · 4 points garantis</div><h2>Exceptions : qui reprend la main ?</h2></div></div>
+<p class="why">L'exercice « Exemple_Exception » est tombé à l'identique en 2021, 2023 et 2024. Il suffit de connaître <b>une</b> règle de propagation.</p>
+<pre class="code" data-l="ada">Pile_Vide : exception;            -- déclarer
+raise Pile_Vide;                  -- lever
+begin                             -- traiter, dans n'importe quel bloc
+   ...
+exception
+   when Constraint_Error =&gt; Put_Line ("Hors bornes");
+   when E1 | E2 =&gt; ...
+   when others =&gt; ...
+end;</pre>
+
+<h3>La règle de propagation</h3>
+<ol class="steps">
+<li><div>Une exception est levée : le bloc courant s'arrête <b>immédiatement et définitivement</b>. Les instructions suivantes du bloc ne sont pas exécutées.</div></li>
+<li><div>On cherche un <code>when</code> correspondant dans la partie <code>exception</code> de <b>ce</b> bloc.</div></li>
+<li><div><b>Trouvé</b> : le traitement s'exécute, puis l'exécution reprend <b>après le bloc</b> (ou, si c'est le corps d'un sous-programme, juste après l'appel, chez l'appelant).</div></li>
+<li><div><b>Pas trouvé</b> : l'exception remonte au bloc englobant ou à l'appelant, et on recommence en 2. Arrivée au programme principal sans traitement : <b>le programme s'arrête</b> en affichant le nom de l'exception.</div></li>
+</ol>
+
+<h3 id="an-exc">L'exercice d'annales, en direct</h3>
+<pre class="code" data-l="ada">procedure Faire (N : in Integer) is
+begin
+   if N = 0 then raise ZeroError;
+   elsif N = 1 then raise UnError;
+   elsif N = 2 then raise DeuxError;
+   else Put (N, 1);
+   end if;
+end Faire;
+
+procedure Exemple (A : in Integer) is
+begin
+   Faire (-A);                    -- ligne 23 : HORS du bloc interne
+   begin
+      Put (':');
+      Faire (A);
+      Put ('+');
+   exception
+      when ZeroError =&gt; Put ('Z');
+      when UnError   =&gt; Put ('U');
+   end;
+   Put ('F');
+end Exemple;
+-- programme principal : Get (X); Exemple (X);   (aucun traite-exception)</pre>
+<div class="sim" id="sim">
+  <div class="row"><span style="font-weight:700">L'utilisateur tape :</span>
+    <button class="btn" type="button" data-x="0" aria-pressed="false">0</button>
+    <button class="btn" type="button" data-x="1" aria-pressed="true">1</button>
+    <button class="btn" type="button" data-x="2" aria-pressed="false">2</button>
+    <button class="btn" type="button" data-x="3" aria-pressed="false">3</button>
+    <button class="btn" type="button" data-x="5" aria-pressed="false">5</button>
+    <button class="btn" type="button" data-x="-1" aria-pressed="false">-1</button>
+  </div>
+  <div class="screen" id="sim-out">Quel entier ? -1:UF</div>
+  <ol class="trace" id="sim-trace"></ol>
+</div>
+<div class="tw"><table>
+<tr><th>Réponse</th><th>Affichage après « Quel entier ? »</th><th>Pourquoi</th></tr>
+<tr><td>0</td><td><code>(rien)</code> puis arrêt</td><td><code>Faire(-0)</code> lève ZeroError <b>avant</b> le bloc interne ; Exemple ne la traite pas, le principal non plus → arrêt, <code>raised ZEROERROR</code>.</td></tr>
+<tr><td>1</td><td><code>-1:UF</code></td><td>-1 s'affiche, puis <code>Faire(1)</code> lève UnError dans le bloc : le <code>'+'</code> est sauté, U est affiché, on reprend après le bloc → F.</td></tr>
+<tr><td>2</td><td><code>-2:</code> puis arrêt</td><td>DeuxError n'a pas de <code>when</code> dans le bloc → propagée hors d'Exemple (le F est sauté) → arrêt, <code>raised DEUXERROR</code>.</td></tr>
+<tr><td>3</td><td><code>-3:3+F</code></td><td>Aucune exception.</td></tr>
+</table></div>
+
+<div class="cols">
+<div class="box key"><span class="t">Exceptions prédéfinies</span><code>Constraint_Error</code> : indice hors bornes, division par zéro, 'Succ du dernier, accès via null, Pre violée sans -gnata… <code>Data_Error</code> : saisie invalide. <code>Storage_Error</code> : plus de mémoire (récursion infinie).</div>
+<div class="box key"><span class="t">Concevoir avec les exceptions</span>Mettre dans le contrat le nom de l'exception et sa condition de levée. Ne traiter que là où l'on a l'information pour réagir ; sinon propager, ou transformer en exception du domaine : <code>when Constraint_Error =&gt; raise Coefficient_Nul;</code></div>
+</div>
+
+<h4>Saisie robuste d'un entier (à savoir écrire)</h4>
+<pre class="code" data-l="ada">loop
+   begin
+      Put ("Entier entre 1 et 10 ? ");
+      Get (N);
+      Skip_Line;
+      exit when N &gt;= 1 and N &lt;= 10;
+   exception
+      when Data_Error =&gt;
+         Skip_Line;                     -- vider la saisie fautive
+         Put_Line ("Ce n'est pas un entier.");
+   end;
+end loop;</pre>
+<label class="got"><input type="checkbox" data-ch="exceptions"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="tad" data-t="TAD et architecture">
+<div class="chead"><div><div class="cnum">CH. 10 · poly K et L</div><h2>Types abstraits, offensif vs défensif, architecture</h2></div></div>
+<p class="why">Un TAD = un type + les services qui le manipulent, représentation cachée. C'est le module de type poussé au bout, et l'occasion de choisir son style de contrat.</p>
+<pre class="code" data-l="ada">generic
+   type Type_Element is private;
+package P_Pile is
+   type T_Pile is private;
+   function Pile_Vide return T_Pile;                       -- constructeur
+   procedure Empiler (P : in out T_Pile; E : in Type_Element);
+   function Est_Vide (P : in T_Pile) return Boolean;       -- observateur
+   function Sommet (P : in T_Pile) return Type_Element     -- accesseur
+      with Pre =&gt; not Est_Vide (P);
+   procedure Depiler (P : in out T_Pile)                   -- modifieur
+      with Pre =&gt; not Est_Vide (P);
+private
+   type T_Cellule;
+   type T_Pile is access T_Cellule;
+   type T_Cellule is record
+      Element : Type_Element;
+      Suivant : T_Pile;
+   end record;
+end P_Pile;</pre>
+<p>Services : <b>constructeurs</b> (créent), <b>accesseurs</b> et <b>observateurs</b> (lisent), <b>modifieurs</b> (changent). Viser la complétude : tout doit être faisable sans connaître la représentation. Implantation au choix : tableau (accès en temps constant, capacité fixe) ou chaînage (taille illimitée).</p>
+
+<h3>Offensif ou défensif ? (question posée tous les ans)</h3>
+<div class="tw"><table>
+<tr><th></th><th>Programmation offensive (par contrat)</th><th>Programmation défensive</th></tr>
+<tr><td>Principe</td><td>Faire confiance à l'appelant</td><td>Se protéger des mauvais appels</td></tr>
+<tr><td>Précondition</td><td>Exclut les cas d'erreur : <code>Non Est_Vide(P)</code></td><td>Souvent <code>Vrai</code></td></tr>
+<tr><td>Cas d'erreur</td><td>Responsabilité de l'appelant, vérifié <b>avant</b> l'appel</td><td>Testé dans le sous-programme, qui <b>lève une exception</b> (<code>Pile_Vide</code>)</td></tr>
+<tr><td>Coût</td><td>Aucun test à l'exécution, code simple</td><td>Un test à chaque appel</td></tr>
+<tr><td>Quand</td><td>Sous-programmes internes, appelants maîtrisés</td><td>Interface publique, données venant de l'extérieur</td></tr>
+</table></div>
+<pre class="code" data-l="algo">-- Version défensive.  Pré : Vrai.  Exception : Pile_Vide si la pile est vide.
+PROCÉDURE Depiler (F_P : in out T_Pile) EST
+DÉBUT
+   Si Non Est_Vide(F_P) Alors
+      F_P &lt;- F_P^.Suivant
+   Sinon
+      LEVER Pile_Vide
+   FinSi
+FIN Depiler</pre>
+
+<h3>Architecture logicielle</h3>
+<p>Un programme est un graphe d'entités (programme principal, sous-programmes, modules, corps) reliées par quatre liens : <b>appelle</b> (SP → SP), <b>utilise</b> (<code>with</code>), <b>réalise</b> (<code>package body</code> → <code>package</code>), <b>instancie</b> (<code>is new</code> → générique).</p>
+<div class="box exam"><span class="t">Liens raffinages ↔ sous-programmes ↔ architecture (2019, 2020)</span>Le raffinage conçoit l'<b>intérieur</b> d'un traitement ; une action complexe réutilisée ou autonome devient un <b>sous-programme</b> dont les flots de données donnent les paramètres et le R0 le contrat. L'architecture <b>range</b> ces sous-programmes dans des modules et décrit leurs liens : les raffinages fournissent les nœuds « appelle » du graphe.</div>
+<label class="got"><input type="checkbox" data-ch="tad"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="tp" data-t="Survie en TP">
+<div class="chead"><div><div class="cnum">TP 1 → TP 4</div><h2>Survie en TP : compiler, saisir, déboguer</h2></div></div>
+<p class="why">Ce qui fait perdre une heure en salle machine tient en une page.</p>
+<pre class="code" data-l="sh">gnatmake -gnatwa -gnata -g mon_programme.adb   # compile + édition de liens
+./mon_programme
+gnatclean mon_programme                         # supprime .o, .ali, exécutable</pre>
+<div class="tw"><table>
+<tr><th>Option</th><th>Rôle</th><th>Pourquoi l'activer</th></tr>
+<tr><td><code>-gnatwa</code></td><td>(presque) tous les avertissements</td><td>Variable non initialisée, inutilisée, test toujours vrai : ce sont des bugs.</td></tr>
+<tr><td><code>-gnata</code></td><td>vérifie <code>Pre</code>, <code>Post</code>, <code>pragma Assert</code></td><td>Sans elle, tes contrats et tes tests ne font rien.</td></tr>
+<tr><td><code>-g</code></td><td>infos de débogage</td><td>Numéros de ligne dans gdb et dans la pile d'appels.</td></tr>
+</table></div>
+
+<h3>Get, Skip_Line, Get_Line : le piège du TP 1</h3>
+<p>Le clavier envoie une file de caractères. <code>Get (Entier)</code> saute les blancs, consomme les chiffres, et <b>laisse le reste</b>. Avec la saisie <code>52cm⏎</code> :</p>
+<div class="tw"><table>
+<tr><th>Appel</th><th>Consomme</th><th>Reste en attente</th></tr>
+<tr><td><code>Get (Valeur)</code></td><td><code>52</code></td><td><code>c m ⏎</code></td></tr>
+<tr><td><code>Get (Unite)</code></td><td><code>c</code></td><td><code>m ⏎</code></td></tr>
+<tr><td><code>Skip_Line</code></td><td><code>m ⏎</code></td><td>rien</td></tr>
+</table></div>
+<p>Règle : un <code>Skip_Line</code> après chaque saisie, pour que la suivante reparte d'une ligne propre. <code>Get_Line (S, N)</code> lit jusqu'à la fin de ligne (consommée). Avec <code>1..n</code>, <code>Get (Integer)</code> lève <code>Data_Error</code>.</p>
+
+<h3>Déboguer une précondition violée (TP 2 ex. 9)</h3>
+<ol>
+<li>GNAT Studio : <b>Debug › Initialize</b> sur le programme.</li>
+<li>Dans la console gdb : <code>catch exception</code>, puis lancer.</li>
+<li>À l'arrêt, la <b>pile d'appels</b> montre l'appelant fautif ; <code>bt full</code> affiche paramètres et variables locales.</li>
+</ol>
+<p>Pré violée → l'erreur est chez l'<b>appelant</b>. Post violée → dans le <b>sous-programme</b>.</p>
+
+<h3>Les exercices de TP et leur idée-clé</h3>
+<div class="tw"><table>
+<tr><th>Exercice</th><th>Idée-clé</th></tr>
+<tr><td>Newton (TP 1)</td><td><code>a(k+1) = (a(k) + x / a(k)) / 2</code>, a0 = 1 ; Répéter … JusquÀ <code>abs (a(k+1) - a(k)) &lt; Precision</code>.</td></tr>
+<tr><td>Puissance rapide</td><td>xⁿ = (x²)ᵖ si n = 2p, (x²)ᵖ × x si n = 2p+1. Exposant négatif : 1 / x⁻ⁿ (pré : x ≠ 0).</td></tr>
+<tr><td>Fibonacci (TP 2)</td><td>Deux variables <code>Precedent</code>, <code>Courant</code> ; pas de tableau.</td></tr>
+<tr><td>Nombres parfaits / amis</td><td>Un sous-programme <code>Somme_Diviseurs (N)</code> réutilisé par les deux : c'est la réponse à « éviter le code redondant ».</td></tr>
+<tr><td>Jeu du devin</td><td>Machine qui devine : <b>dichotomie</b> sur [Min, Max], au plus 7 essais pour 1..100.</td></tr>
+<tr><td>Générateur aléatoire (TP 3)</td><td>Pas besoin de garder les tirages : un tableau de fréquences indexé par la valeur, de taille fixe.</td></tr>
+<tr><td>Jours d'un mois / lendemain</td><td><code>case Mois is when 4 | 6 | 9 | 11 =&gt; 30; when 2 =&gt; 28 ou 29; when others =&gt; 31</code>. Une date en trois entiers ne garantit rien : un enregistrement avec invariant est mieux.</td></tr>
+</table></div>
+<label class="got"><input type="checkbox" data-ch="tp"> Chapitre maîtrisé</label>
+</section>
+
+<section class="chap" id="annales" data-t="Annales corrigées">
+<div class="chead"><div><div class="cnum">2014 → 2024 · sujets fournis</div><h2>Annales corrigées</h2></div></div>
+<p class="why">Essaie d'abord sur papier, chronomètre en main (environ 25 min pour un exercice de raffinage). Ouvre ensuite le corrigé. Tous utilisent la déclaration <code>T_Tab</code> du chapitre 5.</p>
+
+<h3 id="an-majo">Élément majoritaire · 2019, 2021, 2022, 2023 · 7 pts</h3>
+<p>x est majoritaire dans <code>T[1..Taille]</code> si son nombre d'occurrences est <b>strictement supérieur à Taille / 2</b>. S'il existe, il est unique. Exemple : <code>6 1 6 6 3 6 8 6 6 7</code> → 6 (6 fois &gt; 5).</p>
+<details class="sol"><summary>Contrat et entête<span class="tag">Q1</span></summary><div class="in">
+<pre class="code" data-l="algo">-- Nom : Majoritaire
+-- Sémantique : déterminer si F_T contient un élément majoritaire et, si oui, lequel
+-- Paramètres :
+--    F_T      : in T_Tab      -- le tableau étudié
+--    F_Existe : out Booléen   -- VRAI ssi un élément majoritaire existe
+--    F_Elt    : out Entier    -- l'élément majoritaire (si F_Existe)
+-- Pré-condition : 0 &lt;= F_T.Taille &lt;= CAPACITE
+-- Post-condition : F_Existe = (il existe x tel que Nb_Occ(F_T, x) &gt; F_T.Taille Div 2)
+--                  Et (F_Existe ⇒ Nb_Occ(F_T, F_Elt) &gt; F_T.Taille Div 2)
+-- Tests :
+--    6 1 6 6 3 6 8 6 6 7  ==&gt; F_Existe = VRAI, F_Elt = 6   -- nominal
+--    6 1 6 7 3 5 8 4 2 7  ==&gt; F_Existe = FAUX              -- pas de majoritaire
+--    4 4 5 5              ==&gt; F_Existe = FAUX              -- limite : exactement la moitié
+--    9                    ==&gt; F_Existe = VRAI, F_Elt = 9   -- un seul élément
+--    (vide)               ==&gt; F_Existe = FAUX              -- tableau vide
+PROCÉDURE Majoritaire (F_T : in T_Tab; F_Existe : out Booléen; F_Elt : out Entier)</pre>
+<p>Deux résultats → <b>procédure</b> avec deux <code>out</code>. Une fonction ne peut pas convenir : elle n'a que des paramètres <code>in</code> et ne retourne qu'une valeur.</p>
+</div></details>
+<details class="sol"><summary>Raffinages R0 → R2 et algorithme final<span class="tag">Q2 · Q3</span></summary><div class="in">
+<div class="tree"><span class="r">R0 :</span> Déterminer l'élément majoritaire de F_T s'il existe
+
+<span class="r">R1 :</span> Comment « Déterminer l'élément majoritaire » ?
+   F_Existe &lt;- FAUX
+   I &lt;- 1                                        <span class="a">-- candidat courant</span>
+   TantQue Non F_Existe EtAlors I &lt;= F_T.Taille Faire
+      Compter les occurrences de F_T.Elements(I)   <span class="f">F_T, I: in ; Nb_Occ: out</span>
+      Mémoriser le candidat s'il est majoritaire     <span class="f">Nb_Occ, F_T, I: in ; F_Existe, F_Elt: out ; I: in out</span>
+   FinTQ
+   { F_Existe Ou (aucun élément de F_T n'est majoritaire) }
+
+<span class="r">R2 :</span> Comment « Compter les occurrences de F_T.Elements(I) » ?
+   Nb_Occ &lt;- 0
+   Pour J De 1 À F_T.Taille Faire
+      Si F_T.Elements(J) = F_T.Elements(I) Alors
+         Nb_Occ &lt;- Nb_Occ + 1
+      FinSi
+   FinPour
+
+<span class="r">R2 :</span> Comment « Mémoriser le candidat s'il est majoritaire » ?
+   Si Nb_Occ &gt; F_T.Taille Div 2 Alors
+      F_Existe &lt;- VRAI
+      F_Elt &lt;- F_T.Elements(I)
+   Sinon
+      I &lt;- I + 1
+   FinSi</div>
+<pre class="code" data-l="algo">PROCÉDURE Majoritaire (F_T : in T_Tab; F_Existe : out Booléen; F_Elt : out Entier) EST
+   I : Entier        -- indice du candidat courant
+   Nb_Occ : Entier   -- nombre d'occurrences du candidat dans F_T
+DÉBUT
+   F_Existe &lt;- FAUX
+   I &lt;- 1
+   TantQue Non F_Existe EtAlors I &lt;= F_T.Taille Faire   -- variant : F_T.Taille - I + 1
+      -- Compter les occurrences de F_T.Elements(I)
+      Nb_Occ &lt;- 0
+      Pour J De 1 À F_T.Taille Faire
+         Si F_T.Elements(J) = F_T.Elements(I) Alors
+            Nb_Occ &lt;- Nb_Occ + 1
+         FinSi
+      FinPour
+      -- Mémoriser le candidat s'il est majoritaire
+      Si Nb_Occ &gt; F_T.Taille Div 2 Alors
+         F_Existe &lt;- VRAI
+         F_Elt &lt;- F_T.Elements(I)
+      Sinon
+         I &lt;- I + 1
+      FinSi
+   FinTQ
+FIN Majoritaire</pre>
+<p>Complexité O(n²). Optimisation à citer : le majoritaire apparaît forcément parmi les <code>Taille Div 2 + 1</code> premières cases, on peut arrêter les candidats là. Bonus O(n) : l'algorithme de vote de Boyer-Moore (un candidat et un compteur, puis une passe de vérification).</p>
+</div></details>
+
+<h3 id="an-drapeau">Drapeau hollandais · 2019, 2022 · 7 pts</h3>
+<p>Réorganiser T en trois zones autour du pivot V : <b>&lt; V</b> | <b>= V</b> | <b>&gt; V</b>, dans le même tableau. Exemple V = 6 : <code>6 1 9 8 3 6 8 9 5 7</code> → <code>5 1 3 6 6 8 9 8 9 7</code> (l'ordre dans chaque zone est libre).</p>
+<details class="sol"><summary>Contrat, invariant à trois indices, algorithme<span class="tag">corrigé</span></summary><div class="in">
+<pre class="code" data-l="algo">-- Sémantique : réorganiser F_T en zones &lt; F_V, = F_V, &gt; F_V
+-- Paramètres : F_T : in out T_Tab ; F_V : in Entier (le pivot)
+-- Pré : 0 &lt;= F_T.Taille &lt;= CAPACITE
+-- Post : F_T.Taille = F_T.Taille'Avant, F_T contient les mêmes éléments qu'avant,
+--        et il existe I, J tels que T[1..I-1] &lt; F_V, T[I..J] = F_V, T[J+1..Taille] &gt; F_V
+PROCÉDURE Drapeau (F_T : in out T_Tab; F_V : in Entier)</pre>
+<p>L'idée (Dijkstra) : trois indices délimitent quatre zones pendant le parcours.</p>
+<div class="tree">  1        Inf          Cour          Sup        Taille
+  [  &lt; V   |   = V    |  non traités  |   &gt; V   ]
+<span class="a">  invariant : T[1..Inf-1] &lt; V,  T[Inf..Cour-1] = V,  T[Sup+1..Taille] &gt; V
+  variant   : Sup - Cour + 1   (la zone non traitée rétrécit à chaque tour)</span></div>
+<pre class="code" data-l="algo">PROCÉDURE Drapeau (F_T : in out T_Tab; F_V : in Entier) EST
+   Inf : Entier    -- début de la zone = V
+   Cour : Entier   -- prochain élément à traiter
+   Sup : Entier    -- fin de la zone non traitée
+DÉBUT
+   Inf &lt;- 1
+   Cour &lt;- 1
+   Sup &lt;- F_T.Taille
+   TantQue Cour &lt;= Sup Faire
+      -- Ranger F_T.Elements(Cour) dans sa zone
+      Si F_T.Elements(Cour) &lt; F_V Alors
+         Permuter(F_T.Elements(Inf), F_T.Elements(Cour))
+         Inf &lt;- Inf + 1
+         Cour &lt;- Cour + 1
+      SinonSi F_T.Elements(Cour) = F_V Alors
+         Cour &lt;- Cour + 1
+      Sinon
+         Permuter(F_T.Elements(Cour), F_T.Elements(Sup))
+         Sup &lt;- Sup - 1        -- Cour ne bouge pas : l'élément reçu n'est pas traité
+      FinSi
+   FinTQ
+   { Cour = Sup + 1 : la zone non traitée est vide }
+FIN Drapeau</pre>
+<p>Trace sur l'exemple : on obtient <code>1 5 3 | 6 6 | 8 9 8 7 9</code>. Une seule passe, O(n), aucun tableau auxiliaire, comme l'exige l'énoncé.</p>
+</div></details>
+
+<h3 id="an-vigenere">Codage de Vigenère · 2017, 2022 · 6 pts</h3>
+<p>Chaque lettre est décalée du code de la lettre de clé correspondante (A = 0 … Z = 25). La clé est répétée ; les espaces restent des espaces et <b>ne consomment pas</b> de lettre de clé. <code>ELEVE DE …</code> + <code>BONJO UR …</code> → <code>FZRES XV…</code></p>
+<details class="sol"><summary>Contrat et algorithme<span class="tag">corrigé</span></summary><div class="in">
+<pre class="code" data-l="algo">-- Sémantique : coder F_Msg par la méthode de Vigenère avec la clé F_Cle
+-- Paramètres :
+--    F_Msg : in T_CHAINE ; F_Lg_Msg : in Entier    -- message et sa longueur
+--    F_Cle : in T_CHAINE ; F_Lg_Cle : in Entier    -- clé et sa longueur
+--    F_Code : out T_CHAINE                         -- message codé (longueur F_Lg_Msg)
+-- Pré : 0 &lt;= F_Lg_Msg &lt;= Longueur_Max Et 1 &lt;= F_Lg_Cle &lt;= Longueur_Max
+--       Et F_Msg[1..F_Lg_Msg] ne contient que 'A'..'Z' et ' '
+--       Et F_Cle[1..F_Lg_Cle] ne contient que 'A'..'Z'
+-- Post : pour tout I, F_Code(I) = ' ' si F_Msg(I) = ' ', sinon la lettre de code
+--        (code(F_Msg(I)) + code(lettre de clé associée)) Mod 26
+-- Test : "ELEVE DE PREMIERE ANNEE", "BONJOUR" ==&gt; "FZRES XVQFR VWYIF OAWSY"
+PROCÉDURE Vigenere (F_Msg : in T_CHAINE; F_Lg_Msg : in Entier;
+                    F_Cle : in T_CHAINE; F_Lg_Cle : in Entier;
+                    F_Code : out T_CHAINE) EST
+   J : Entier          -- indice dans la clé de la prochaine lettre à utiliser
+   Decalage : Entier   -- somme des codes de la lettre et de la lettre de clé
+DÉBUT
+   J &lt;- 1
+   Pour I De 1 À F_Lg_Msg Faire
+      Si F_Msg(I) = ' ' Alors
+         F_Code(I) &lt;- ' '
+      Sinon
+         -- Coder la lettre F_Msg(I) avec la lettre de clé F_Cle(J)
+         Decalage &lt;- (Ord(F_Msg(I)) - Ord('A')) + (Ord(F_Cle(J)) - Ord('A'))
+         F_Code(I) &lt;- Chr(Ord('A') + Decalage Mod 26)
+         -- Passer à la lettre de clé suivante (circulairement)
+         J &lt;- J Mod F_Lg_Cle + 1
+      FinSi
+   FinPour
+FIN Vigenere</pre>
+<p>Vérification : E(4) + B(1) = 5 → F ; L(11) + O(14) = 25 → Z ; V(21) + J(9) = 30 mod 26 = 4 → E. Le type <code>T_CHAINE</code> n'a pas de longueur : il faut la passer en paramètre, ou mieux définir un enregistrement (chaîne + longueur), ce qu'on peut proposer en copie.</p>
+</div></details>
+
+<h3 id="an-seq">Plus longue séquence triée · 2024 · 8 pts</h3>
+<p><code>6 1 9 8 3 6 8 9 5 7</code> → <code>3 6 8 9</code>. À égalité de longueur, n'importe laquelle.</p>
+<details class="sol"><summary>Contrat et algorithme en une passe<span class="tag">corrigé</span></summary><div class="in">
+<pre class="code" data-l="algo">-- Sémantique : extraire de F_T sa plus longue suite de cases consécutives triée
+-- Paramètres : F_T : in T_Tab ; F_Seq : out T_Tab
+-- Pré : 0 &lt;= F_T.Taille &lt;= CAPACITE
+-- Post : F_Seq est triée, c'est une tranche de F_T, et aucune tranche triée
+--        de F_T n'est plus longue que F_Seq.Taille
+-- Tests : 6 1 9 8 3 6 8 9 5 7 ==&gt; 3 6 8 9 ; 5 4 3 ==&gt; 5 ; 1 2 3 ==&gt; 1 2 3 ; vide ==&gt; vide
+PROCÉDURE Sequence (F_T : in T_Tab; F_Seq : out T_Tab) EST
+   Debut_Cour : Entier      -- début de la séquence triée en cours
+   Meilleur_Debut : Entier  -- début de la plus longue séquence trouvée
+   Meilleure_Long : Entier  -- sa longueur
+DÉBUT
+   -- Déterminer la plus longue séquence triée
+   Debut_Cour &lt;- 1
+   Meilleur_Debut &lt;- 1
+   Si F_T.Taille = 0 Alors
+      Meilleure_Long &lt;- 0
+   Sinon
+      Meilleure_Long &lt;- 1
+   FinSi
+   Pour I De 2 À F_T.Taille Faire
+      Si F_T.Elements(I) &lt; F_T.Elements(I - 1) Alors
+         Debut_Cour &lt;- I                     -- la séquence est rompue
+      FinSi
+      Si I - Debut_Cour + 1 &gt; Meilleure_Long Alors
+         Meilleur_Debut &lt;- Debut_Cour
+         Meilleure_Long &lt;- I - Debut_Cour + 1
+      FinSi
+   FinPour
+   -- Copier cette séquence dans F_Seq
+   Pour K De 1 À Meilleure_Long Faire
+      F_Seq.Elements(K) &lt;- F_T.Elements(Meilleur_Debut + K - 1)
+   FinPour
+   F_Seq.Taille &lt;- Meilleure_Long
+FIN Sequence</pre>
+</div></details>
+
+<h3 id="an-doublons">Éliminer les doublons · 2018, 2020 · 10 pts</h3>
+<p>Même tableau, pas de tableau intermédiaire. <code>1 2 30 4 30 3 4 5 6 4</code> → <code>1 2 30 4 3 5 6</code> (on garde la 1re occurrence).</p>
+<details class="sol"><summary>Tableau non trié puis trié<span class="tag">corrigé</span></summary><div class="in">
+<p><b>Idée</b> : un indice d'écriture <code>Nb</code>. On parcourt le tableau ; on recopie l'élément en position <code>Nb + 1</code> seulement s'il n'est pas déjà dans <code>T[1..Nb]</code>.</p>
+<pre class="code" data-l="algo">-- Pré : 0 &lt;= F_T.Taille &lt;= CAPACITE
+-- Post : F_T ne contient plus de doublon, garde la 1re occurrence de chaque
+--        valeur de F_T'Avant, dans le même ordre
+PROCÉDURE Eliminer (F_T : in out T_Tab) EST
+   Nb : Entier       -- nombre d'éléments conservés : F_T[1..Nb] sans doublon
+   J : Entier        -- indice de recherche dans F_T[1..Nb]
+DÉBUT
+   Nb &lt;- 0
+   Pour I De 1 À F_T.Taille Faire
+      -- Chercher F_T(I) parmi les éléments conservés
+      J &lt;- 1
+      TantQue J &lt;= Nb EtAlors F_T.Elements(J) /= F_T.Elements(I) Faire
+         J &lt;- J + 1
+      FinTQ
+      -- Conserver F_T(I) s'il est nouveau
+      Si J &gt; Nb Alors
+         Nb &lt;- Nb + 1
+         F_T.Elements(Nb) &lt;- F_T.Elements(I)
+      FinSi
+   FinPour
+   F_T.Taille &lt;- Nb
+FIN Eliminer</pre>
+<p><b>Si le tableau est trié</b> (partie B, 2020) : les doublons sont voisins. La spécification gagne la pré « F_T trié » et la post « F_T reste trié » ; le raffinage remplace la recherche par une comparaison avec le dernier conservé, O(n) :</p>
+<pre class="code" data-l="algo">Si Nb = 0 OuSinon F_T.Elements(I) /= F_T.Elements(Nb) Alors
+   Nb &lt;- Nb + 1
+   F_T.Elements(Nb) &lt;- F_T.Elements(I)
+FinSi</pre>
+<p><b>Généraliser à d'autres types</b> (A3) : sous-programme générique paramétré par le type d'élément (<code>type T_Element is private;</code>, qui fournit <code>=</code>).</p>
+</div></details>
+
+<h3 id="an-mystere">Comprendre un programme : Mystère · 2021, 2023, 2024 · 4 pts</h3>
+<pre class="code" data-l="ada">function Mystere (A : in T_Tab; B : in Integer; C : in Integer) return Integer is
+begin
+   if C &lt; 1 then
+      return 0;
+   else
+      return A.Elements (C) ** B + Mystere (A, B, C - 1);
+   end if;
+end Mystere;</pre>
+<details class="sol"><summary>Les six réponses<span class="tag">corrigé</span></summary><div class="in">
+<ol>
+<li><b>Récursive</b> : elle s'appelle elle-même (cas de base C &lt; 1, cas récursif sinon).</li>
+<li><code>Mystere(Tab1, 2, 5)</code> avec <code>4 3 2 1 0 -1 …</code> = 4² + 3² + 2² + 1² + 0² = 16 + 9 + 4 + 1 + 0 = <b>30</b>.</li>
+<li>Terminaison : C diminue de 1 à chaque appel et l'arrêt a lieu dès que C &lt; 1 ; C est un variant.</li>
+<li>Préconditions offensives : <code>B &gt;= 0</code> (un exposant négatif sur un Integer lève <code>Constraint_Error</code>) et <code>C &lt;= A.Taille</code> (pas d'accès hors des cases utilisées). <code>C</code> peut valoir 0 (somme vide).</li>
+<li>Elle calcule la somme des puissances B-ièmes des C premiers éléments : Σ<sub>i=1..C</sub> A(i)<sup>B</sup>.</li>
+<li>Noms : <code>Somme_Puissances (Tab, Exposant, Nb_Elements)</code>.</li>
+</ol></div></details>
+
+<h3 id="an-erreurs">Trouver les erreurs · 2018, 2018 S2, 2020</h3>
+<p>Signatures : <code>PROCÉDURE F(X : IN OUT ENTIER)</code> et <code>PROCÉDURE G(X : IN OUT ENTIER ; N : IN ENTIER)</code>. A, M, P, Y sont des entiers initialisés.</p>
+<details class="sol"><summary>Correct ou pas, et pourquoi<span class="tag">corrigé</span></summary><div class="in">
+<div class="tw"><table>
+<tr><th>Appel</th><th>Verdict</th><th>Justification</th></tr>
+<tr><td><code>G (P, 3)</code></td><td>✔</td><td>P variable pour un in out ; 3 expression pour un in.</td></tr>
+<tr><td><code>Y := G (Y, M)</code></td><td>✘</td><td>G est une procédure : son appel n'a pas de valeur.</td></tr>
+<tr><td><code>G (P, 3 + X)</code></td><td>✘</td><td>X n'est pas déclarée (seules A, M, P, Y existent). Avec <code>3 + M</code> ce serait correct.</td></tr>
+<tr><td><code>G (Y * Y, M)</code></td><td>✘</td><td><code>Y * Y</code> est une expression, pas une variable : interdit pour un in out.</td></tr>
+<tr><td><code>G (Y, F (M))</code></td><td>✘</td><td>F est une procédure, pas une fonction : elle ne fournit pas de valeur pour N.</td></tr>
+<tr><td><code>F (-Y)</code></td><td>✘</td><td>Expression passée à un in out.</td></tr>
+<tr><td><code>F (Y)</code></td><td>✔</td><td>Variable, bon type.</td></tr>
+<tr><td><code>G (P, A * P)</code></td><td>✔</td><td>A * P est une expression entière pour un in.</td></tr>
+<tr><td><code>G (Y)</code></td><td>✘</td><td>Il manque le second paramètre.</td></tr>
+</table></div>
+<p><b>Le programme <code>Recherche_Elt</code> (2018 S2)</b> contient : <code>I</code> non déclaré et non initialisé (et confondu avec <code>FIndice</code>) ; <code>FTaille</code> absent des paramètres ; <code>AND</code> au lieu de <code>AND THEN</code> (lecture hors du tableau) ; affectation <code>Fe := 0</code> d'un paramètre <code>in</code> ; fonction sans <code>return</code> ; appel d'une fonction comme une procédure avec 4 paramètres ; saisie <code>N &lt;= 10 and N &gt;= 1</code> correcte mais lecture des éléments non contrôlée. Correction : <code>function Indice_Elt (FTab : in T_Tableau; FTaille : in Integer; Fe : in Integer) return Integer</code>, avec <code>I := 1</code>, <code>and then</code>, et <code>return</code> I ou 0 ; appel <code>Indice := Indice_Elt (T, N, Elt);</code>.</p>
+</div></details>
+
+<h3 id="an-adn">Mutations ADN · 2017, 2018 S2 · 9 pts</h3>
+<p>Appliquer les règles α → Λ (le motif disparaît) tant qu'une règle s'applique. On dispose de <code>DecalageGauche(Fseq, Flong, Fdeb, Fnb_cases)</code>.</p>
+<details class="sol"><summary>Raffinage et terminaison<span class="tag">corrigé</span></summary><div class="in">
+<div class="tree"><span class="r">R0 :</span> Appliquer les règles de mutation à Seq jusqu'à ce qu'aucune ne s'applique
+
+<span class="r">R1 :</span>
+   Répéter
+      Appliquer une règle applicable         <span class="f">Seq, Long: in out ; Regles: in ; Applique: out</span>
+   JusquÀ Non Applique
+   { aucun motif de Regles n'apparaît dans Seq[1..Long] }
+
+<span class="r">R2 :</span> Comment « Appliquer une règle applicable » ?
+   Applique &lt;- FAUX
+   R &lt;- 1
+   TantQue Non Applique EtAlors R &lt;= Nb_Regles Faire
+      Chercher la position P du motif Regles(R) dans Seq  <span class="f">P: out (0 si absent)</span>
+      Si P /= 0 Alors
+         DecalageGauche(Seq, Long, P, Longueur(Regles(R)))
+         Applique &lt;- VRAI
+      Sinon
+         R &lt;- R + 1
+      FinSi
+   FinTQ</div>
+<p><b>Terminaison</b> : chaque application supprime un motif non vide, donc <code>Long</code> décroît strictement ; Long ≥ 0 : c'est un variant. La boucle s'arrête au plus après Long'Avant applications.</p>
+</div></details>
+
+<h3>Les autres sujets, en une ligne d'idée</h3>
+<div class="tw"><table>
+<tr><th>Sujet</th><th>Idée-clé</th></tr>
+<tr><td>Sudoku (2019)</td><td><code>TYPE T_Sudoku EST TABLEAU (1..9, 1..9) DE Entier</code>. Vérifier 9 lignes, 9 colonnes, 9 blocs avec un tableau <code>Vu (1..9) DE Booléen</code> remis à FAUX pour chaque groupe ; s'arrêter au premier doublon (TantQue, pas Pour).</td></tr>
+<tr><td>Suite de Robinson (2014)</td><td><code>Suivant(u)</code> : compter les occurrences de chaque chiffre de 9 à 0 (tableau de 10 compteurs), puis écrire (compte, chiffre) pour chaque compte non nul.</td></tr>
+<tr><td>Liste circulaire, Josèphe (2014)</td><td>Supprimer le k-ième : avancer de k-1 cellules depuis la position courante, court-circuiter la suivante, cas particulier de la liste à un élément (devient null).</td></tr>
+<tr><td>Relevé de températures (2018)</td><td>Enregistrement (Jour, Mois, Température, Heure (H, Min), Lieu : chaîne) dans un tableau de 366 relevés.</td></tr>
+</table></div>
+<label class="got"><input type="checkbox" data-ch="annales"> Annales travaillées</label>
+</section>
+
+<section class="chap" id="cours" data-t="Questions de cours">
+<div class="chead"><div><div class="cnum">4–5 pts · réponses modèles</div><h2>Questions de cours : les réponses attendues</h2></div></div>
+<p class="why">Toutes ces questions sont tombées au moins une fois depuis 2018. Réponds en 3 à 5 lignes, avec un exemple. Cache la réponse, récite, puis vérifie.</p>
+
+<details class="sol"><summary>Qu'appelle-t-on « action complexe » dans la méthode des raffinages ?<span class="tag">2021 · 23 · 24</span></summary><div class="in"><p>Une action que le processeur ne sait pas exécuter directement : elle n'est pas une instruction élémentaire du langage. Elle s'écrit comme un verbe à l'infinitif (« Calculer le pgcd de a et b ») et doit être <b>raffinée</b>, décomposée en sous-actions plus simples, jusqu'à n'obtenir que des instructions. Dans l'algorithme final, elle devient le commentaire qui précède son bloc d'instructions.</p></div></details>
+
+<details class="sol"><summary>Expliquer les « flots de données ». Quel est leur intérêt ?<span class="tag">2021 · 23 · 24</span></summary><div class="in"><p>Pour chaque action d'un raffinage, on indique les données qu'elle utilise (<code>in</code>), produit (<code>out</code>) ou modifie (<code>in out</code>). Intérêt : vérifier que chaque donnée est produite avant d'être utilisée et que les sous-actions produisent bien les sorties de l'action mère ; identifier les variables de l'algorithme ; et, si l'action devient un sous-programme, donner directement ses paramètres et leurs modes.</p></div></details>
+
+<details class="sol"><summary>Qu'est-ce qu'un module générique ? Quel est son intérêt ?<span class="tag">2019 → 2024</span></summary><div class="in"><p>Un module paramétré par des types, des constantes ou des sous-programmes (partie <code>generic</code>). Il n'est pas utilisable directement : on l'<b>instancie</b> avec des paramètres effectifs (<code>package Piles_Entiers is new Piles (Integer);</code>). Intérêt : écrire et tester une seule fois un algorithme ou une structure (pile, liste, tri) valable pour tous les types, sans dupliquer le code, en gardant le contrôle de type à la compilation.</p></div></details>
+
+<details class="sol"><summary>Comparer programmation offensive et défensive.<span class="tag">tous les ans</span></summary><div class="in"><p><b>Offensive</b> : on fait confiance à l'appelant ; les cas d'erreur sont exclus par la <b>précondition</b>, que l'appelant doit vérifier. Code simple et rapide, mais comportement indéfini si le contrat n'est pas respecté. <b>Défensive</b> : le sous-programme vérifie lui-même ses données (précondition souvent Vrai) et signale l'erreur, en général en <b>levant une exception</b>. Plus robuste, mais un test à chaque appel. Exemple : <code>Depiler</code> avec pré « pile non vide » (offensif) ou qui lève <code>Pile_Vide</code> (défensif).</p></div></details>
+
+<details class="sol"><summary>À quoi sert une précondition ? Une postcondition ?<span class="tag">tous les ans</span></summary><div class="in"><p>Elles forment le <b>contrat</b> d'un sous-programme. La <b>précondition</b> est la condition que l'appelant doit garantir avant l'appel (ex. <code>N &gt;= 0</code> pour Factorielle) ; le sous-programme n'a pas à la tester. La <b>postcondition</b> est ce que le sous-programme garantit à la fin si la précondition était vraie (ex. <code>Résultat = N!</code>). Elles servent à spécifier sans montrer le code, à raisonner sur la correction, à écrire les tests, et en Ada (<code>Pre</code>, <code>Post</code>, option <code>-gnata</code>) à détecter les erreurs à l'exécution et à savoir qui est fautif.</p></div></details>
+
+<details class="sol"><summary>Liens entre raffinages et sous-programmes ? Et architecture ?<span class="tag">2019 · 2020</span></summary><div class="in"><p>Oui. Une action complexe d'un raffinage (surtout si elle est réutilisée) devient un sous-programme : son intitulé donne la sémantique, ses flots de données les paramètres et leurs modes, ses assertions la pré et la post. Inversement, le corps d'un sous-programme se conçoit par raffinages à partir de sa spécification (R0). L'architecture logicielle organise ensuite ces sous-programmes en modules et représente les liens « appelle », « utilise », « réalise », « instancie » entre eux.</p></div></details>
+
+<details class="sol"><summary>Spécification vs implantation d'un module ? Avantages d'un module ?<span class="tag">2018 S2</span></summary><div class="in"><p>La spécification (<code>.ads</code>) est l'interface visible des clients : types, constantes, signatures et contrats des sous-programmes, avec une partie <code>private</code> pour la représentation. L'implantation (<code>.adb</code>) contient le code de ces sous-programmes et les éléments internes. Avantages : encapsulation, masquage de l'information (invariants protégés), changement d'implantation sans impact sur les clients, réutilisation, compilation séparée, travail en équipe.</p></div></details>
+
+<details class="sol"><summary>Lien entre appelant et appelé ? Que signifie une précondition Pre_1 sur SP1 ?<span class="tag">2018 S2</span></summary><div class="in"><p>Ils sont liés par le contrat et les paramètres : l'appelant fournit des paramètres effectifs compatibles (nombre, types, modes) et garantit la précondition ; l'appelé garantit la postcondition. Définir <code>Pre_1</code> sur <code>SP1</code> signifie que tout appelant doit s'assurer que <code>Pre_1</code> est vraie avant d'appeler <code>SP1</code> ; SP1 peut la supposer vraie sans la tester. Si elle est fausse, l'erreur est chez l'appelant.</p></div></details>
+
+<details class="sol"><summary>Signature d'un sous-programme ? Intérêt des types énumérés ?<span class="tag">2018</span></summary><div class="in"><p><b>Signature</b> : son nom, la liste de ses paramètres formels (nom, mode, type) et, pour une fonction, son type de retour. C'est ce qui permet de vérifier un appel (et de distinguer des sous-programmes surchargés). <b>Énumérés</b> : nommer explicitement un ensemble fini de valeurs (jours, directions) ; programme plus lisible qu'avec des entiers codés, valeurs invalides refusées par le compilateur, <code>case</code> exhaustif vérifié, attributs Succ, Pred, Pos, Image disponibles.</p></div></details>
+
+<details class="sol"><summary>Les structures de répétition et quand les utiliser ?<span class="tag">2018 S2</span></summary><div class="in"><p><b>Pour</b> : nombre de tours connu à l'avance (parcours complet d'un tableau). <b>TantQue</b> : nombre inconnu, éventuellement zéro tour (recherche, lecture jusqu'à une sentinelle). <b>Répéter … JusquÀ</b> : au moins un tour (saisie contrôlée, menu). Pour TantQue et Répéter, la séquence doit modifier la condition et on justifie la terminaison par un variant.</p></div></details>
+<label class="got"><input type="checkbox" data-ch="cours"> Je sais les réciter</label>
+</section>
+
+<section class="chap" id="quiz" data-t="Quiz">
+<div class="chead"><div><div class="cnum">auto-évaluation</div><h2>Quiz express</h2></div></div>
+<p class="why">Douze questions sur les pièges qui coûtent des points. Clique une réponse, l'explication s'affiche.</p>
+<p class="score" id="score">Score : 0 / 0</p>
+<div id="quizbox"></div>
+<button class="btn" type="button" id="quizreset">Recommencer le quiz</button>
+</section>
+
+<section class="chap" id="pieges" data-t="Avant de rendre">
+<div class="chead"><div><div class="cnum">les 5 dernières minutes</div><h2>Checklist avant de rendre la copie</h2></div></div>
+<div class="cols">
+<div class="box trap"><span class="t">Méthode</span>
+<ul style="margin:0;padding-left:18px">
+<li>R0 + exemples (nominal, limite, erreur) présents ?</li>
+<li>Actions complexes = verbes à l'infinitif, pas de « Vérifier » ?</li>
+<li>Flots de données sur chaque action du R1 ?</li>
+<li>Contrat complet : sémantique, paramètres commentés, pré, post, tests ?</li>
+<li>Assertion après chaque boucle, variant justifié ?</li>
+</ul></div>
+<div class="box trap"><span class="t">Code</span>
+<ul style="margin:0;padding-left:18px">
+<li>Toutes les variables déclarées, commentées, initialisées ?</li>
+<li><code>EtAlors</code> / <code>and then</code> dans chaque recherche ?</li>
+<li>Boucle jusqu'à <code>Taille</code>, jamais jusqu'à <code>CAPACITE</code> ?</li>
+<li>Aucun paramètre <code>in</code> modifié, aucune expression passée en <code>out</code> ?</li>
+<li>Pas de constante littérale magique, pas de fonction qui affiche ?</li>
+<li>Cas tableau vide, un seul élément, liste <code>null</code> traités ?</li>
+</ul></div>
+</div>
+</section>
+
+<footer>
+<p>Guide construit d'après le poly « Méthodologie de la Programmation » (Y. Ait-Ameur, X. Crégut, K. Jaffrès-Runser, ENSEEIHT, département SN), les TD 1–4, TP 1–4 et les sujets d'examen 2014–2024 de la 1re année apprentissage I&amp;R. Les corrigés sont des propositions de rédaction, pas des corrigés officiels.</p>
+</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  /* ---------- coloration Ada / algo ---------- */
+  var KW='with use procedure function is begin end if then elsif else case when others loop while for in out reverse exit return type record array of access new null raise exception declare package body private limited generic subtype constant and or not mod rem abs xor pragma Algorithme Programme Constantes Variables Début DÉBUT Fin FIN Si Alors SinonSi Sinon FinSi Selon Dans Autres FinSelon TantQue Faire FinTQ Répéter JusquÀ Pour De À FinPour PROCÉDURE FONCTION RETOURNE EST TYPE ENUMERATION ENREGISTREMENT TABLEAU DE POINTEUR SUR NEW LEVER EXCEPTION Et Ou Non EtAlors OuSinon Div Mod Rien Null CONSTANTE';
+  var kw={};KW.split(' ').forEach(function(w){kw[w.toLowerCase()]=1});
+  var adaOnlyLower={'de':0,'sur':0,'si':0,'fin':0,'pour':0,'dans':0,'faire':0,'ou':0,'et':0,'non':0,'à':0,'est':0}; // mots français courants : seulement avec la casse algo
+  var re=/(--.*$)|(\{[^}\n]*\})|("[^"\n]*")|('.')(?![A-Za-z_])|('[A-Za-z_]\w*)|(\b\d[\d_.]*(?:[eE][-+]?\d+)?\b)|([A-Za-zÀ-ÿ_][\wÀ-ÿ]*)|(#.*$)/gm;
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function hl(src,lang){
+    var out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));last=re.lastIndex;
+      var t=m[0];
+      if(m[1]) out+='<span class="c">'+esc(t)+'</span>';
+      else if(m[2]) out+='<span class="as">'+esc(t)+'</span>';
+      else if(m[3]) out+='<span class="s">'+esc(t)+'</span>';
+      else if(m[4]) out+='<span class="s">'+esc(t)+'</span>';
+      else if(m[5]) out+='<span class="at">'+esc(t)+'</span>';
+      else if(m[6]) out+='<span class="num">'+esc(t)+'</span>';
+      else if(m[7]){
+        var low=t.toLowerCase(),isKw=kw[low]===1;
+        if(isKw && lang==='algo' && (low in adaOnlyLower) && t===low) isKw=false;
+        if(isKw && lang==='ada' && (low in adaOnlyLower)) isKw=false;
+        out+=isKw?'<span class="k">'+esc(t)+'</span>':esc(t);
+      }
+      else if(m[8]) out+=(lang==='sh'?'<span class="c">'+esc(t)+'</span>':esc(t));
+      else out+=esc(t);
+    }
+    return out+esc(src.slice(last));
+  }
+  document.querySelectorAll('pre.code').forEach(function(p){
+    var lang=p.dataset.l||'ada';
+    var src=p.textContent;
+    if(lang==='ada') src=src;
+    p.innerHTML=hl(src,lang);
+  });
+
+  /* ---------- onglets Algo / Ada ---------- */
+  document.querySelectorAll('.dual').forEach(function(d,i){
+    var pres=[].slice.call(d.querySelectorAll(':scope > pre.code'));
+    var tabs=document.createElement('div');tabs.className='tabs';tabs.setAttribute('role','tablist');
+    pres.forEach(function(p,j){
+      var b=document.createElement('button');b.type='button';b.setAttribute('role','tab');
+      b.textContent=p.dataset.name||(p.dataset.l==='algo'?'Langage algorithmique':'Ada');
+      b.setAttribute('aria-selected',j===0?'true':'false');
+      if(j>0)p.hidden=true;
+      b.addEventListener('click',function(){
+        pres.forEach(function(q,k){q.hidden=k!==j;tabs.children[k].setAttribute('aria-selected',k===j?'true':'false')});
+      });
+      tabs.appendChild(b);
+    });
+    d.insertBefore(tabs,d.firstChild);
+  });
+
+  /* ---------- sommaire + progression ---------- */
+  var secs=[].slice.call(document.querySelectorAll('section.chap'));
+  function buildToc(ol){
+    secs.forEach(function(s,i){
+      if(s.id==='annales'){var sep=document.createElement('li');sep.className='sep';sep.textContent="S'entraîner";ol.appendChild(sep)}
+      var li=document.createElement('li');li.dataset.for=s.id;
+      var a=document.createElement('a');a.href='#'+s.id;
+      a.innerHTML='<span class="n"><span>'+String(i+1).padStart(2,'0')+'</span></span><span>'+s.dataset.t+'</span>';
+      li.appendChild(a);ol.appendChild(li);
+    });
+  }
+  var tocs=[document.getElementById('toc'),document.getElementById('toc-m')];
+  tocs.forEach(buildToc);
+  document.querySelectorAll('#toc-m a').forEach(function(a){a.addEventListener('click',function(){a.closest('details').open=false})});
+  var boxes=[].slice.call(document.querySelectorAll('input[data-ch]'));
+  function refresh(){
+    var n=0;
+    boxes.forEach(function(b){
+      document.querySelectorAll('li[data-for="'+b.dataset.ch+'"]').forEach(function(li){li.classList.toggle('done',b.checked)});
+      if(b.checked)n++;
+    });
+    var txt=n+' / '+boxes.length+' chapitres maîtrisés';
+    document.getElementById('pg-txt').textContent=txt;
+    document.getElementById('pg-txt-m').textContent=txt;
+    document.getElementById('pg-bar').style.width=(100*n/boxes.length)+'%';
+  }
+  boxes.forEach(function(b){
+    b.id='got-'+b.dataset.ch;
+    b.checked=store.get('mp-'+b.dataset.ch)==='1';
+    b.addEventListener('change',function(){store.set('mp-'+b.dataset.ch,b.checked?'1':'0');refresh()});
+  });
+  refresh();
+
+  /* scrollspy */
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){
+        document.querySelectorAll('.toc a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)});
+      }});
+    },{rootMargin:'-20% 0px -70% 0px'});
+    secs.forEach(function(s){io.observe(s)});
+  }
+
+  /* ---------- thème ---------- */
+  var modes=['auto','clair','sombre'],root=document.documentElement,tb=document.getElementById('theme');
+  var mode=store.get('mp-theme')||'auto';
+  function applyTheme(){
+    if(mode==='clair')root.setAttribute('data-theme','light');
+    else if(mode==='sombre')root.setAttribute('data-theme','dark');
+    else root.removeAttribute('data-theme');
+    tb.textContent='Thème : '+mode;
+  }
+  tb.addEventListener('click',function(){mode=modes[(modes.indexOf(mode)+1)%3];store.set('mp-theme',mode);applyTheme()});
+  applyTheme();
+
+  /* ---------- ouvrir tous les corrigés ---------- */
+  var ob=document.getElementById('openall'),allOpen=false;
+  ob.addEventListener('click',function(){allOpen=!allOpen;document.querySelectorAll('details.sol').forEach(function(d){d.open=allOpen});ob.textContent=allOpen?'Fermer les corrigés':'Ouvrir les corrigés'});
+
+  /* ---------- simulateur Exemple_Exception ---------- */
+  function simulate(x){
+    var out='',tr=[],stop=null;
+    function faire(n,ligne){
+      if(n===0)return 'ZeroError';if(n===1)return 'UnError';if(n===2)return 'DeuxError';
+      out+=String(n);tr.push('Faire('+n+') '+ligne+' : aucun cas spécial, affiche <b>'+n+'</b>.');return null;
+    }
+    tr.push('Get (X) lit <b>'+x+'</b>, puis appel Exemple ('+x+').');
+    var e=faire(-x,'(ligne 23)');
+    if(e){
+      tr.push('Faire('+(-x)+') lève <span class="x">'+e+'</span>, ligne 23, <b>hors</b> du bloc begin…exception : aucun traite-exception dans Exemple.');
+      tr.push('Propagation au programme principal, qui ne la traite pas : <span class="x">arrêt du programme</span> (raised '+e.toUpperCase()+').');
+      return {out:out,tr:tr};
+    }
+    out+=':';tr.push("Entrée dans le bloc interne : affiche <b>:</b>");
+    e=faire(x,'(ligne 26, dans le bloc)');
+    if(e){
+      tr.push('Faire('+x+') lève <span class="x">'+e+'</span> dans le bloc : Put (\'+\') est sauté.');
+      if(e==='ZeroError'||e==='UnError'){
+        var c=e==='ZeroError'?'Z':'U';out+=c;
+        tr.push('Le bloc a un <code>when '+e+'</code> : affiche <b>'+c+'</b>, puis reprise après le <code>end;</code> du bloc.');
+        out+='F';tr.push("Put ('F') : affiche <b>F</b>. Fin normale.");
+      }else{
+        tr.push('Pas de <code>when DeuxError</code> dans le bloc : propagation hors d\'Exemple, Put (\'F\') sauté.');
+        tr.push('Le programme principal ne la traite pas : <span class="x">arrêt du programme</span> (raised DEUXERROR).');
+      }
+      return {out:out,tr:tr};
+    }
+    out+='+';tr.push("Put ('+') : affiche <b>+</b>. Pas d'exception, le bloc se termine normalement.");
+    out+='F';tr.push("Put ('F') : affiche <b>F</b>. Fin normale.");
+    return {out:out,tr:tr};
+  }
+  var simBtns=[].slice.call(document.querySelectorAll('#sim [data-x]'));
+  function runSim(x){
+    var r=simulate(x);
+    document.getElementById('sim-out').textContent='Quel entier ? '+r.out+(r.tr[r.tr.length-1].indexOf('arrêt')>=0?'   ⟵ le programme s\'arrête':'');
+    document.getElementById('sim-trace').innerHTML=r.tr.map(function(t){return '<li>'+t+'</li>'}).join('');
+    simBtns.forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.x===x))});
+  }
+  simBtns.forEach(function(b){b.addEventListener('click',function(){runSim(+b.dataset.x)})});
+  runSim(1);
+
+  /* ---------- quiz ---------- */
+  var Q=[
+   ['Une fonction peut-elle avoir un paramètre in out ?',['Oui, si elle retourne aussi une valeur','Non, une fonction n\'a que des paramètres in','Oui, en Ada uniquement'],1,'Dans ce cours, une fonction est une abstraction de valeur : uniquement des paramètres in, aucun effet de bord. Deux résultats → procédure avec deux out.'],
+   ['G (X : in out Entier ; N : in Entier). L\'appel G (P, A * P) est…',['Correct','Faux : A * P est une expression','Faux : il faut deux variables'],0,'Le 2e paramètre est in : n\'importe quelle expression entière convient. Seul le in out exige une variable.'],
+   ['Pourquoi « I <= T.Taille and then T.Elements(I) /= E » et pas « and » ?',['Pour aller plus vite','Pour ne jamais lire T.Elements(Taille + 1)','C\'est une question de style'],1,'Avec and, les deux côtés sont évalués : quand I = Taille + 1, on lit une case hors des éléments (voire hors du tableau → Constraint_Error).'],
+   ['Une postcondition violée à l\'exécution (-gnata) indique une erreur…',['chez l\'appelant','dans le sous-programme qui la porte (ou dans la post)','dans le compilateur'],1,'Pré violée → faute de l\'appelant. Post violée → faute de l\'appelé.'],
+   ['Quelle boucle pour une saisie contrôlée (redemander tant que invalide) ?',['Pour','TantQue','Répéter … JusquÀ'],2,'On demande au moins une fois : Répéter … JusquÀ saisie valide (en Ada : loop … exit when … end loop).'],
+   ['Exemple_Exception, l\'utilisateur tape 2. Affichage ?',['-2:F','-2:','-2:+F'],1,'DeuxError n\'est pas traitée dans le bloc, elle sort d\'Exemple (F sauté) et arrête le programme après "-2:".'],
+   ['Mystere(Tab1, 2, 5) avec Tab1 = 4 3 2 1 0 -1 … vaut',['30','10','29'],0,'Somme des carrés des 5 premiers : 16 + 9 + 4 + 1 + 0 = 30.'],
+   ['Dans un raffinage, quel intitulé d\'action est le meilleur ?',['Vérifier le tableau','Incrémenter I','Déterminer l\'indice du minimum de T[I..N]'],2,'Verbe à l\'infinitif qui dit ce qui est produit. « Vérifier » ne dit pas le résultat, « Incrémenter I » paraphrase une instruction.'],
+   ['Le variant d\'une boucle sert à prouver…',['la correction','la terminaison','l\'absence d\'exception'],1,'Entier ≥ 0 qui décroît strictement à chaque tour → la boucle s\'arrête. L\'invariant, lui, sert à la correction.'],
+   ['type T_Date is private; Le client peut écrire…',['D.Jour := 3;','D1 := D2;','D1 < D2'],1,'private laisse :=, = et /= plus les sous-programmes du module. limited private retirerait aussi := et =.'],
+   ['Integer (2.5) vaut',['2','3','Erreur de compilation'],1,'La conversion Float → Integer arrondit (au plus loin de zéro pour .5). Pour tronquer : Float\'Truncation.'],
+   ['Programmation offensive : le cas « pile vide » pour Depiler est géré…',['par une exception Pile_Vide','par la précondition Non Est_Vide, à la charge de l\'appelant','par un message d\'erreur affiché'],1,'Offensif = contrat : l\'appelant garantit la précondition. Défensif = test interne + exception.']
+  ];
+  var box=document.getElementById('quizbox'),score=0,done=0;
+  function upd(){document.getElementById('score').textContent='Score : '+score+' / '+done+(done===Q.length?(score>=10?' · prêt pour le partiel':' · relis les explications'):'')}
+  function renderQuiz(){
+    score=0;done=0;box.innerHTML='';
+    Q.forEach(function(q,i){
+      var d=document.createElement('div');d.className='q';
+      var p=document.createElement('p');p.textContent=(i+1)+'. '+q[0];d.appendChild(p);
+      var o=document.createElement('div');o.className='opts';
+      var ex=document.createElement('div');ex.className='ex';ex.hidden=true;ex.textContent=q[3];
+      q[1].forEach(function(t,j){
+        var b=document.createElement('button');b.type='button';b.className='o';b.textContent=t;
+        b.addEventListener('click',function(){
+          if(d.dataset.done)return;d.dataset.done='1';done++;
+          if(j===q[2]){score++;b.classList.add('good')}else{b.classList.add('bad');o.children[q[2]].classList.add('good')}
+          ex.hidden=false;upd();
+        });
+        o.appendChild(b);
+      });
+      d.appendChild(o);d.appendChild(ex);box.appendChild(d);
+    });
+    upd();
+  }
+  document.getElementById('quizreset').addEventListener('click',renderQuiz);
+  renderQuiz();
+})();
+</script>
+</body>
+</html>
